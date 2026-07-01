@@ -1,0 +1,47 @@
+# ==========================================
+# LivingAuthenticity-AI
+# Git Ignore
+# ==========================================
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# ---------- Virtual Environment ----------
+Venv/
+
+# ---------- Environment Variables ----------
+.env
+
+# ---------- IDE ----------
+.vscode/
+
+# ---------- Logs ----------
+Logs/*
+!Logs/.gitkeep
+
+# ---------- Python Cache ----------
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ---------- Operating System ----------
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ---------- Temporary Files ----------
+*.tmp
+*.bak
+
+# ---------- Archives ----------
+*.zip
+*.7z
+*.rar
+
+# ---------- Python Packaging ----------
+dist/
+build/
+*.egg-info/
