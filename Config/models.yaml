@@ -1,0 +1,7 @@
+embedding:
+  active: "bge_m3"
+
+bge_m3:
+  dimension: 1024
+  normalize: true
+  batch_size: 16

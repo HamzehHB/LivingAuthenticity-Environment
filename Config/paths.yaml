@@ -1,0 +1,29 @@
+project:
+  root: "E:/LivingAuthenticity_AI"
+
+data:
+  root: "F:/LivingAuthenticity_Data"
+
+models:
+  bge_m3: "F:/LivingAuthenticity_Data/Models/BGE-M3"
+
+vector_db:
+  lancedb: "F:/LivingAuthenticity_Data/VectorDB/LanceDB"
+
+memory:
+  root: "F:/LivingAuthenticity_Data/Memory"
+
+obsidian:
+  vault: "F:/LivingAuthenticity_Data/Knowledge/Obsidian"
+
+zotero:
+  library: "F:/LivingAuthenticity_Data/Knowledge/Zotero"
+
+cache:
+  root: "F:/LivingAuthenticity_Data/Database/Cache"
+
+logs:
+  root: "E:/LivingAuthenticity_AI/Logs"
+
+prompts:
+  root: "E:/LivingAuthenticity_AI/Prompts"
