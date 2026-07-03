@@ -5,7 +5,7 @@ data:
   root: "F:/LivingAuthenticity_Data"
 
 models:
-  bge_m3: "F:/LivingAuthenticity_Data/Models/BGE-M3"
+  bge_m3: "F:/LivingAuthenticity_Data/Models/Embedding_Model/BGE_M3"
 
 vector_db:
   lancedb: "F:/LivingAuthenticity_Data/VectorDB/LanceDB"

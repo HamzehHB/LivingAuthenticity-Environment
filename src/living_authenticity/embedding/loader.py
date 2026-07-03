@@ -13,3 +13,7 @@ class BGEModel:
 
     def get_dimension(self):
         return len(self.model.encode(["test"])[0])
+
+
+def load_embedding_model(model_path: str):
+    return BGEModel(model_path)
