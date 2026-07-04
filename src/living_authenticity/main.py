@@ -5,20 +5,14 @@ from src.living_authenticity.database.lancedb_manager import LanceDBManager
 
 
 def main():
-    model_path = PATHS["models"]["bge_m3"]
-
-    embedding_service = EmbeddingService(model_path)
-
-    vector = embedding_service.embed("سلام دنیا")
-
-    print(f"Embedding dimension: {len(vector)}")
-    print(vector[:10])
+    EmbeddingService(PATHS["models"]["bge_m3"])
 
     db_manager = LanceDBManager()
-
     db_manager.create_knowledge_vector_table()
 
-    print("Knowledge Vector Table created successfully.")
+    print("Embedding Service initialized.")
+    print("LanceDB initialized.")
+    print("LivingAuthenticity AI initialized successfully.")
 
 
 if __name__ == "__main__":
