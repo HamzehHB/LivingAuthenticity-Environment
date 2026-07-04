@@ -15,20 +15,21 @@ class LanceDBManager:
         return self.db.create_table(
             "knowledge_vectors",
             schema=KNOWLEDGE_VECTOR_SCHEMA,
-            exist_ok=True
+            exist_ok=True,
         )
 
     def get_table(self):
         return self.db.open_table("knowledge_vectors")
 
-    def store(self, text: str, embedding):
+    def store(self, text: str, embedding, metadata: dict):
         table = self.get_table()
 
         table.add([
             {
                 "id": str(uuid.uuid4()),
                 "text": text,
-                "embedding": embedding.tolist()
+                "source": metadata["source"],
+                "embedding": embedding.tolist(),
             }
         ])
 
