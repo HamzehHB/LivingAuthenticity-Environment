@@ -19,6 +19,9 @@ obsidian:
 zotero:
   library: "F:/LivingAuthenticity_Data/Knowledge/Zotero"
 
+exports:
+  root: "F:/LivingAuthenticity_Data/Knowledge/Exports"
+
 cache:
   root: "F:/LivingAuthenticity_Data/Database/Cache"
 
@@ -27,6 +30,3 @@ logs:
 
 prompts:
   root: "E:/LivingAuthenticity_AI/Prompts"
-
-  exports:
-  root: "F:/LivingAuthenticity_Data/Knowledge/Exports"
