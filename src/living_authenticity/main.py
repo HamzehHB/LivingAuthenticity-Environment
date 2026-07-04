@@ -16,7 +16,9 @@ def main():
 
     db_manager = LanceDBManager()
 
-    print("LanceDB connected successfully.")
+    db_manager.create_knowledge_vector_table()
+
+    print("Knowledge Vector Table created successfully.")
 
 
 if __name__ == "__main__":
