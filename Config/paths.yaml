@@ -8,8 +8,8 @@ models:
   bge_m3: "F:/LivingAuthenticity_Data/Models/Embedding_Model/BGE_M3"
 
 vector_db:
-  lancedb: "F:/LivingAuthenticity_Data/VectorDB/LanceDB"
-
+  lancedb: "F:/LivingAuthenticity_Data/Database/Vector_Database"
+  
 memory:
   root: "F:/LivingAuthenticity_Data/Memory"
 

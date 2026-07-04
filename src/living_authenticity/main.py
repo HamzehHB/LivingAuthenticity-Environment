@@ -1,5 +1,7 @@
-from src.living_authenticity.embedding.service import EmbeddingService
 from Config.settings import PATHS
+
+from src.living_authenticity.embedding.service import EmbeddingService
+from src.living_authenticity.database.lancedb_manager import LanceDBManager
 
 
 def main():
@@ -11,6 +13,10 @@ def main():
 
     print(f"Embedding dimension: {len(vector)}")
     print(vector[:10])
+
+    db_manager = LanceDBManager()
+
+    print("LanceDB connected successfully.")
 
 
 if __name__ == "__main__":
