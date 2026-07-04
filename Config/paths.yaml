@@ -9,7 +9,7 @@ models:
 
 vector_db:
   lancedb: "F:/LivingAuthenticity_Data/Database/Vector_Database"
-  
+
 memory:
   root: "F:/LivingAuthenticity_Data/Memory"
 
@@ -27,3 +27,6 @@ logs:
 
 prompts:
   root: "E:/LivingAuthenticity_AI/Prompts"
+
+  exports:
+  root: "F:/LivingAuthenticity_Data/Knowledge/Exports"
