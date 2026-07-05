@@ -1,15 +1,17 @@
 class Chunker:
     """
-    Splits text into semantic chunks.
+    Splits text into semantic chunks with paragraph overlap.
     """
 
     def __init__(
         self,
         max_chunk_size: int = 500,
         minimum_chunk_size: int = 120,
+        overlap: int = 1,
     ):
         self.max_chunk_size = max_chunk_size
         self.minimum_chunk_size = minimum_chunk_size
+        self.overlap = overlap
 
     def _find_split_position(self, text: str):
 
@@ -61,32 +63,63 @@ class Chunker:
 
         chunks = []
 
+        current_chunk = []
+        current_length = 0
+
         for paragraph in paragraphs:
 
-            remaining = paragraph
+            paragraph_length = len(paragraph)
 
-            while len(remaining) > self.max_chunk_size:
+            if paragraph_length > self.max_chunk_size:
 
-                split_position = self._find_split_position(
-                    remaining
+                if current_chunk:
+                    chunks.append("\n\n".join(current_chunk))
+                    current_chunk = []
+                    current_length = 0
+
+                remaining = paragraph
+
+                while len(remaining) > self.max_chunk_size:
+
+                    split_position = self._find_split_position(
+                        remaining
+                    )
+
+                    first = remaining[:split_position].strip()
+                    second = remaining[split_position:].strip()
+
+                    if len(second) < self.minimum_chunk_size:
+                        chunks.append(remaining)
+                        remaining = ""
+                        break
+
+                    chunks.append(first)
+                    remaining = second
+
+                if remaining:
+                    chunks.append(remaining)
+
+                continue
+
+            if (
+                current_length + paragraph_length
+                > self.max_chunk_size
+            ):
+
+                chunks.append("\n\n".join(current_chunk))
+
+                current_chunk = current_chunk[-self.overlap :]
+
+                current_length = sum(
+                    len(p)
+                    for p in current_chunk
                 )
 
-                first_part = remaining[:split_position].strip()
-                second_part = remaining[split_position:].strip()
+            current_chunk.append(paragraph)
 
-                # اگر بخش دوم خیلی کوچک است
-                # اصلاً Split نکن.
-                if len(second_part) < self.minimum_chunk_size:
+            current_length += paragraph_length
 
-                    chunks.append(remaining)
-                    remaining = ""
-                    break
-
-                chunks.append(first_part)
-
-                remaining = second_part
-
-            if remaining:
-                chunks.append(remaining)
+        if current_chunk:
+            chunks.append("\n\n".join(current_chunk))
 
         return chunks

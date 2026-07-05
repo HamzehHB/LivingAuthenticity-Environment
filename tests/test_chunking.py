@@ -4,20 +4,28 @@ from src.living_authenticity.knowledge.chunking.chunker import Chunker
 def main():
 
     text = """
-Living Authenticity is not simply being yourself. It is the continuous integration of identity, meaning, and lived experience through authentic action. Human beings constantly reconstruct themselves through reflection and action. Authenticity is therefore never static.
 
-Living Authenticity is not simply being yourself. It is the continuous integration of identity, meaning, and lived experience through authentic action. Human beings constantly reconstruct themselves through reflection and action. Authenticity is therefore never static.
+Paragraph One.
 
-Living Authenticity is not simply being yourself. It is the continuous integration of identity, meaning, and lived experience through authentic action. Human beings constantly reconstruct themselves through reflection and action. Authenticity is therefore never static.
+Paragraph Two.
 
-Living Authenticity is not simply being yourself. It is the continuous integration of identity, meaning, and lived experience through authentic action. Human beings constantly reconstruct themselves through reflection and action. Authenticity is therefore never static.
+Paragraph Three.
 
-Living Authenticity is not simply being yourself. It is the continuous integration of identity, meaning, and lived experience through authentic action. Human beings constantly reconstruct themselves through reflection and action. Authenticity is therefore never static.
+Paragraph Four.
+
+Paragraph Five.
+
+Paragraph Six.
+
+Paragraph Seven.
+
+Paragraph Eight.
+
 """
 
     chunker = Chunker(
-        max_chunk_size=250,
-        minimum_chunk_size=120,
+        max_chunk_size=60,
+        overlap=1,
     )
 
     chunks = chunker.split(text)
@@ -28,7 +36,6 @@ Living Authenticity is not simply being yourself. It is the continuous integrati
 
         print(f"Chunk {i}")
         print("-" * 40)
-        print(f"Length: {len(chunk)}")
         print(chunk)
         print()
 
