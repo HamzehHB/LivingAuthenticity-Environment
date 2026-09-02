@@ -1,42 +1,71 @@
+from dataclasses import dataclass
+
+from src.living_authenticity.knowledge.parser.parsed_note import ParsedNote
+
+
+@dataclass
+class IngestionResult:
+    """Analysis-only output of one file. No authoritative write."""
+
+    file_path: str
+    raw_text: str
+    cleaned_text: str
+    chunks: list[str]
+    parsed: ParsedNote | None
+    metadata: dict
+
+
 class IngestionPipeline:
     """
-    Coordinates the complete knowledge ingestion pipeline.
+    Current stage: read, clean, chunk, and parse.
+
+    Reader
+        ↓
+    Cleaner
+        ↓
+    Chunker
+        ↓
+    Parser (optional)
+        ↓
+    File metadata
+
+    This pipeline does not embed, store, or write authoritative knowledge.
     """
 
     def __init__(
         self,
-        reader,
+        reader_registry,
+        chunker_registry,
         cleaner,
-        chunker,
         metadata_extractor,
-        embedding_service,
-        database,
+        parser=None,
     ):
-        self.reader = reader
+
+        self.reader_registry = reader_registry
+        self.chunker_registry = chunker_registry
         self.cleaner = cleaner
-        self.chunker = chunker
         self.metadata_extractor = metadata_extractor
-        self.embedding_service = embedding_service
-        self.database = database
+        self.parser = parser
 
-    def ingest(self, file_path: str):
+    def ingest(self, file_path: str) -> IngestionResult:
 
-        raw_text = self.reader.read(file_path)
-
+        reader = self.reader_registry.get(file_path)
+        raw_text = reader.read(file_path)
         cleaned_text = self.cleaner.clean(raw_text)
+        chunker = self.chunker_registry.get(file_path)
+        chunks = chunker.split(cleaned_text)
 
-        chunks = self.chunker.split(cleaned_text)
+        parsed = None
+        if self.parser is not None:
+            parsed = self.parser.parse(cleaned_text)
 
-        for chunk in chunks:
+        metadata = self.metadata_extractor.extract(file_path)
 
-            metadata = self.metadata_extractor.extract(file_path)
-
-            embedding = self.embedding_service.embed(chunk)
-
-            self.database.store(
-                text=chunk,
-                embedding=embedding,
-                metadata=metadata,
-            )
-
-        return len(chunks)
+        return IngestionResult(
+            file_path=file_path,
+            raw_text=raw_text,
+            cleaned_text=cleaned_text,
+            chunks=chunks,
+            parsed=parsed,
+            metadata=metadata,
+        )

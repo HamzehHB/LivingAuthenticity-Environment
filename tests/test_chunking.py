@@ -1,44 +1,42 @@
-from src.living_authenticity.knowledge.chunking.chunker import Chunker
+from src.living_authenticity.knowledge.chunking.paragraph_chunker import (
+    ParagraphChunker,
+)
 
 
-def main():
+PERSIAN_NOTE = """
+مشاهده مطرح‌شده:
+افرادی که در محیط‌های مملو از دغدغه، فشار یا مشکلات مزمن رشد کرده‌اند ممکن است توانایی تجربه آرامش در امور ساده زندگی را از دست بدهند.
 
-    text = """
+نمونه‌های مطرح‌شده:
+- تجربه آرامش با احساس اتلاف وقت اشتباه گرفته می‌شود.
+- فرد حتی در نبود فشار یا وظیفه بیرونی برای خود تنش ایجاد می‌کند.
+- نبود دغدغه ممکن است به جای آرامش، احساس بی‌قراری ایجاد کند.
 
-Paragraph One.
+ارتباطات:
+[[سیستم بقا]]
+[[سیستم آرامش]]
 
-Paragraph Two.
+#peace
+#survival
 
-Paragraph Three.
+Origin:
+مشاهده مبتنی بر تجربه شخصی و فرهنگی 2025/05/12
 
-Paragraph Four.
+وضعیت:
+مستقل
 
-Paragraph Five.
+تعارض با مدل فعلی:
+ندارد
 
-Paragraph Six.
-
-Paragraph Seven.
-
-Paragraph Eight.
-
+سؤال‌های باز:
+چگونه می‌توان توانایی تجربه آرامش در امور ساده را بازآموخت و بر بینش شخص تاثیر گذاشت؟
 """
 
-    chunker = Chunker(
-        max_chunk_size=60,
-        overlap=1,
-    )
 
-    chunks = chunker.split(text)
+def test_paragraph_chunker_splits_on_blank_lines():
+    chunker = ParagraphChunker()
+    chunks = chunker.split(PERSIAN_NOTE)
 
-    print(f"\nChunks: {len(chunks)}\n")
-
-    for i, chunk in enumerate(chunks, start=1):
-
-        print(f"Chunk {i}")
-        print("-" * 40)
-        print(chunk)
-        print()
-
-
-if __name__ == "__main__":
-    main()
+    assert len(chunks) >= 2
+    assert any("مشاهده مطرح‌شده" in chunk for chunk in chunks)
+    assert any("[[سیستم بقا]]" in chunk for chunk in chunks)

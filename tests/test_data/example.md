@@ -1,0 +1,15 @@
+Observation:
+People often lose the ability to enjoy calmness.
+
+Relations:
+[[Peace]]
+[[Survival]]
+
+Tags:
+#peace
+
+Origin:
+Personal observation.
+
+Questions:
+How can calmness be relearned?
