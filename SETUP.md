@@ -1,69 +1,68 @@
-# LivingAuthenticity-AI Development Setup
+# LivingAuthenticity Environment — Development Setup
+
+This document describes the local development environment and the basic requirements for running the **LivingAuthenticity Environment**.
 
 ## Python
 
-- Python 3.13+
-
----
+* Python 3.13+
 
 ## External Software
 
-The following software must be installed before running the project:
+The following software should be installed before running the project:
 
-- Git
-- Visual Studio Code
-- Ollama
-- Obsidian
-- Zotero
+* Git
+* Visual Studio Code
+* Ollama
+* Obsidian
+* Zotero
 
----
+## Models
 
-## Installed Models
+### Embedding Model
 
-### Embedding Models
+* BGE-M3
 
-- BGE-M3
+### Local LLM
 
-### Local LLMs
+* Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf
 
-- Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf
+Models are not downloaded automatically by the project. They must already exist in the configured model directories.
 
 ---
 
 ## Project Layout
 
-The project is intentionally separated into two independent locations.
+The project separates **source code** from **persistent data**.
 
 ### Source Code
 
-```
-E:\LivingAuthenticity_AI
-```
+The repository contains:
 
-Contains:
-
-- Source code
-- Configuration
-- Documentation
-- Prompts
-- Logs
-- Virtual Environment
-
----
+* Source code
+* Configuration
+* Documentation
+* Prompts
+* Tests
+* Development logs
+* Virtual environment
 
 ### Persistent Data
 
-```
-F:\LivingAuthenticity_Data
+Persistent data is stored outside the repository and may include:
+
+* Models
+* Memory
+* Databases
+* Knowledge sources
+* Backups
+
+The exact location of persistent data is configured through:
+
+```text
+Config/paths.yaml
 ```
 
-Contains:
-
-- Models
-- Memory
-- Databases
-- Knowledge Sources
-- Backups
+This allows the project to remain independent of a specific machine or drive layout.
 
 ---
 
@@ -77,13 +76,13 @@ python -m venv Venv
 
 ### Activate the virtual environment
 
-Windows
+#### Windows
 
-```bash
+```powershell
 Venv\Scripts\activate
 ```
 
-### Install project dependencies
+### Install dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -93,63 +92,51 @@ pip install -r requirements.txt
 
 ## Data Structure
 
-### Models
+The persistent data environment is organized conceptually into the following areas:
 
+```text
+Models/
+Memory/
+Knowledge/
+Database/
+Backups/
 ```
-F:\LivingAuthenticity_Data\Models
-```
+
+### Models
 
 Contains:
 
-- Embedding_Model
-- Local_LLM
-
----
+* Embedding models
+* Local LLMs
 
 ### Memory
 
-```
-F:\LivingAuthenticity_Data\Memory
-```
+Contains the project's persistent memory layers, where applicable:
 
-Contains:
-
-- conversations
-- episodic
-- semantic
-- reflection
-- identity
-- goals
-- values
-- working
-
----
+* conversations
+* episodic
+* semantic
+* reflection
+* identity
+* goals
+* values
+* working
 
 ### Knowledge
 
-```
-F:\LivingAuthenticity_Data\Knowledge
-```
+Contains external and structured research knowledge, including:
 
-Contains:
-
-- Obsidian
-- Zotero
-- Exports
-
----
+* Obsidian
+* Zotero
+* Exports
 
 ### Database
 
-```
-F:\LivingAuthenticity_Data\Database
-```
+Contains database-related data such as:
 
-Contains:
-
-- Cache
-- Embedding
-- Vector_Database
+* Cache
+* Embeddings
+* Vector databases
 
 ---
 
@@ -157,34 +144,42 @@ Contains:
 
 Configuration files are stored in:
 
-```
+```text
 Config/
 ```
 
-Current configuration:
+Current configuration files include:
 
-- paths.yaml
-- models.yaml
+* `paths.yaml`
+* `models.yaml`
+
+### `paths.yaml`
+
+Defines locations for project data and external resources.
+
+### `models.yaml`
+
+Defines model-related configuration.
 
 ---
 
 ## Dependency Management
 
-This project uses **pip-tools**.
+The project uses **pip-tools** for dependency management.
 
-Main dependencies:
+### Source dependencies
 
-```
+```text
 requirements.in
 ```
 
-Resolved dependencies:
+### Resolved dependencies
 
-```
+```text
 requirements.txt
 ```
 
-Regenerate dependencies:
+### Regenerate dependencies
 
 ```bash
 pip-compile requirements.in
@@ -192,12 +187,33 @@ pip-compile requirements.in
 
 ---
 
-## Notes
+## Private Project Documents
 
-- Source code is stored on the SSD for maximum performance.
-- Persistent data is stored on the HDD for capacity and long-term storage.
-- Project paths are configured in `Config/paths.yaml`.
-- AI models are **not downloaded automatically** and must already exist in the configured model directories.
-- Ollama is used for local LLM inference.
-- Obsidian and Zotero are integrated as external knowledge sources.
-- The project is designed to keep source code and persistent data physically separated.
+Some project documents are intentionally kept local and are not committed to the public repository.
+
+They are stored under:
+
+```text
+.project/
+```
+
+This directory may contain:
+
+* `Project-Vision.md`
+* `Current-Summer-Scope.md`
+
+The `.project/` directory is excluded through `.gitignore`.
+
+---
+
+## Development Notes
+
+* Source code and persistent data should remain physically separable.
+* Persistent data should not be committed to the public repository.
+* Local model files should not be committed to the repository.
+* Project-specific paths should be configured through `Config/paths.yaml`.
+* AI models are not downloaded automatically.
+* Ollama is used for local LLM inference where configured.
+* Obsidian and Zotero serve as external knowledge sources.
+* The development environment should remain portable across machines.
+* Provider- and model-specific configuration should remain separate from the core Knowledge Management logic.

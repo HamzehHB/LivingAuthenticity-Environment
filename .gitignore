@@ -1,5 +1,5 @@
 # ==========================================
-# LivingAuthenticity-AI
+# LivingAuthenticity Environment
 # ==========================================
 
 # ---------- Python ----------
@@ -46,3 +46,6 @@ build/
 # ---------- Test outputs ----------
 tests/output/
 tests/temp/
+
+# ---------- Private Project Documents ----------
+.project/

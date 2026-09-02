@@ -1,0 +1,1566 @@
+# Knowledge-Schema.yaml
+# LivingAuthenticity Environment
+#
+# Status:
+#   Authoritative
+#
+# Purpose:
+#   Canonical schema for the Knowledge Management layer of the
+#   LivingAuthenticity Environment.
+#
+# This file defines:
+#   - knowledge units
+#   - authoritative notes
+#   - knowledge types
+#   - provenance
+#   - relations
+#   - comparison semantics
+#   - duplicate/update/merge/novelty decisions
+#   - actions
+#   - confidence
+#   - human approval records
+#   - audit information
+#   - validation rules
+#
+# This schema defines the structure and semantic rules of Knowledge
+# Management. Authorization and execution boundaries are governed by
+# the project's AI governance layer.
+#
+# Design principle:
+#   Preserve meaning, provenance, distinctions, uncertainty, and
+#   knowledge integrity while remaining independent of any specific
+#   model, provider, agent, database, or implementation framework.
+
+
+schema:
+  name: "LivingAuthenticity Knowledge Schema"
+  version: "1.0.0"
+  project: "LivingAuthenticity Environment"
+  status: "authoritative"
+
+  authority:
+    scope: "Knowledge Management architecture and data semantics"
+    rules:
+      - "This schema is the canonical definition of Knowledge Management structures."
+      - "Implementations must preserve the semantic meaning defined here."
+      - "Implementation details may change without changing the semantic contract."
+      - "This schema does not itself grant authorization to modify authoritative knowledge."
+
+  design_goals:
+    - "Preserve knowledge meaning."
+    - "Preserve provenance."
+    - "Preserve meaningful distinctions."
+    - "Represent uncertainty explicitly."
+    - "Prevent fabricated references."
+    - "Separate analysis from authoritative state."
+    - "Support human-governed knowledge evolution."
+    - "Remain model-independent."
+    - "Remain provider-independent."
+    - "Remain agent-independent."
+    - "Remain implementation-independent."
+
+
+# ============================================================================
+# 1. CORE INVARIANTS
+# ============================================================================
+
+invariants:
+
+  human_authority:
+    description: "Authoritative knowledge changes are human-governed."
+    requirements:
+      - "Analytical output is not automatically authoritative knowledge."
+      - "A proposal is not an executed change."
+      - "Approval is distinct from confidence."
+      - "Execution must correspond to an explicitly approved action."
+
+  meaning_preservation:
+    requirements:
+      - "Cleaning must not silently alter substantive meaning."
+      - "Normalization must preserve intended meaning."
+      - "Interpretation must remain distinguishable from source content."
+      - "Meaningful ambiguity must remain visible."
+
+  provenance:
+    required: true
+    requirements:
+      - "Knowledge must remain traceable to its origin whenever origin is available."
+      - "Derived knowledge must retain traceability to the knowledge from which it was derived."
+      - "Unknown provenance must not be fabricated."
+
+  no_silent_data_loss:
+    requirements:
+      - "Meaningful information must not be silently discarded."
+      - "Rejected or non-imported knowledge should remain explainable when relevant."
+      - "Archival must remain distinguishable from deletion."
+      - "Merge operations must preserve meaningful distinctions."
+
+  retrieval_integrity:
+    requirements:
+      - "Retrieved candidates must correspond to actual knowledge objects."
+      - "Identifiers must never be fabricated."
+      - "Paths must never be fabricated."
+      - "Retrieval results are candidates for analysis, not decisions."
+
+  relation_integrity:
+    requirements:
+      - "Relations require actual source and target objects."
+      - "Similarity alone does not establish a relation."
+      - "Relation targets must be verified."
+
+  identity_integrity:
+    requirements:
+      - "Semantic similarity does not establish identity."
+      - "Semantic similarity does not establish duplication."
+      - "Semantic similarity does not establish mergeability."
+
+  uncertainty:
+    requirements:
+      - "Uncertainty must be represented when materially relevant."
+      - "Insufficient evidence must not be converted into false certainty."
+      - "Ambiguous cases should normally resolve to NEEDS_REVIEW."
+
+  core_integrity:
+    requirements:
+      - "Core represents approved theoretical reference knowledge."
+      - "Core must be resolved from actual approved knowledge."
+      - "Core must not be assumed from hardcoded model knowledge."
+      - "Potential Core conflicts must remain visible."
+      - "Core changes require explicit human governance."
+
+
+# ============================================================================
+# 2. KNOWLEDGE TYPES
+# ============================================================================
+
+knowledge_types:
+
+  canonical:
+    - "Core"
+    - "Concept"
+    - "Observation"
+    - "Experience"
+    - "Research"
+    - "Method"
+    - "Source"
+    - "Meta"
+    - "Archive"
+
+  definitions:
+
+    Core:
+      description: "Approved foundational or governing theoretical knowledge."
+      authoritative: true
+      special_status: true
+
+    Concept:
+      description: "A conceptual, theoretical, or abstract knowledge object."
+      authoritative: true
+
+    Observation:
+      description: "An observation concerning a phenomenon, pattern, event, or behavior."
+      authoritative: true
+
+    Experience:
+      description: "A lived, subjective, or first-person experiential knowledge object."
+      authoritative: true
+
+    Research:
+      description: "Research-oriented knowledge including findings, arguments, hypotheses, analyses, or interpretations."
+      authoritative: true
+
+    Method:
+      description: "A method, procedure, methodological principle, or research practice."
+      authoritative: true
+
+    Source:
+      description: "A source or source-derived knowledge object used for evidence or provenance."
+      authoritative: true
+
+    Meta:
+      description: "Knowledge concerning the knowledge system, its structure, development, interpretation, or history."
+      authoritative: true
+
+    Archive:
+      description: "Previously authoritative knowledge retained for historical or traceability purposes."
+      authoritative: true
+      deletion_equivalent: false
+
+  open_questions:
+    independent_note_type: false
+    description: >
+      Open questions are normally represented as sections or fields within
+      knowledge objects rather than as an independent knowledge type.
+    exception: >
+      An open question may become an independent knowledge object when it has
+      meaningful independent value and is intentionally established as such.
+
+
+# ============================================================================
+# 3. KNOWLEDGE UNIT
+# ============================================================================
+
+knowledge_unit:
+
+  definition: >
+    A knowledge unit is the smallest independently analyzable meaningful
+    unit extracted from an input.
+
+  cardinality:
+    per_input:
+      minimum: 0
+      maximum: "unbounded"
+
+  rules:
+    - "One input may contain zero knowledge units."
+    - "One input may contain one knowledge unit."
+    - "One input may contain multiple independent knowledge units."
+    - "Independent units must be analyzed separately."
+    - "Extraction must preserve provenance."
+    - "Extraction must preserve original meaning."
+
+  fields:
+
+    id:
+      type: "string"
+      required: true
+      description: "Unique identifier for the knowledge unit."
+
+    source:
+      type: "provenance"
+      required: true
+
+    original_text:
+      type: "string"
+      required: true
+
+    normalized_text:
+      type: "string"
+      required: false
+
+    concept:
+      type: "string"
+      required: false
+
+    meaning:
+      type: "string"
+      required: true
+
+    context:
+      type: "string"
+      required: false
+
+    proposed_type:
+      type: "knowledge_type"
+      required: true
+
+    extracted_claims:
+      type: "array"
+      items: "string"
+      required: false
+
+    open_questions:
+      type: "array"
+      items: "string"
+      required: false
+
+    conflicts:
+      type: "array"
+      items: "conflict"
+      required: false
+
+    interpretation:
+      type: "string"
+      required: false
+      description: "AI interpretation of the knowledge unit."
+
+    uncertainty:
+      type: "object"
+      required: false
+
+
+# ============================================================================
+# 4. AUTHORITATIVE NOTE
+# ============================================================================
+
+note:
+
+  definition: >
+    An authoritative note is a persistent knowledge object representing
+    approved knowledge within the Knowledge Management system.
+
+  fields:
+
+    id:
+      type: "string"
+      required: true
+
+    type:
+      type: "knowledge_type"
+      required: true
+
+    title:
+      type: "string"
+      required: true
+
+    concept:
+      type: "string"
+      required: true
+
+    body:
+      type: "string"
+      required: true
+
+    relations:
+      type: "array"
+      items: "relation"
+      required: true
+      default: []
+
+    tags:
+      type: "array"
+      items: "string"
+      required: true
+      default: []
+
+    origin:
+      type: "provenance"
+      required: true
+
+    additional_notes:
+      type: "string"
+      required: false
+
+    open_questions:
+      type: "array"
+      items: "string"
+      required: true
+      default: []
+
+    conflicts:
+      type: "array"
+      items: "conflict"
+      required: true
+      default: []
+
+    status:
+      type: "note_status"
+      required: true
+
+    created_at:
+      type: "datetime"
+      required: false
+
+    updated_at:
+      type: "datetime"
+      required: false
+
+  semantic_requirements:
+    - "The note must represent a meaningful knowledge object."
+    - "The note must preserve provenance."
+    - "The note must not contain fabricated relations."
+    - "The note must not silently erase meaningful distinctions."
+    - "The note's type must correspond to its semantic role."
+
+
+# ============================================================================
+# 5. NOTE STATUS
+# ============================================================================
+
+note_status:
+
+  values:
+    active:
+      description: "Currently active authoritative knowledge."
+
+    needs_review:
+      description: "Knowledge retained but requiring human review."
+
+    archived:
+      description: "Knowledge retained for historical or traceability purposes."
+
+  rules:
+    - "Archived does not mean deleted."
+    - "Status must not be used to hide unresolved conflicts."
+
+
+# ============================================================================
+# 6. FOLDER STRUCTURE
+# ============================================================================
+
+folder_structure:
+
+  "00 Inbox":
+    purpose: "Unprocessed or temporarily staged inputs."
+    authoritative: false
+
+  "01 Core":
+    purpose: "Approved Core knowledge."
+    authoritative: true
+    canonical_type: "Core"
+
+  "02 Observation":
+    purpose: "Observation knowledge."
+    authoritative: true
+    canonical_type: "Observation"
+
+  "03 Concepts":
+    purpose: "Conceptual and theoretical knowledge."
+    authoritative: true
+    canonical_type: "Concept"
+
+  "04 Experience":
+    purpose: "Experiential knowledge."
+    authoritative: true
+    canonical_type: "Experience"
+
+  "05 Research":
+    purpose: "Research knowledge."
+    authoritative: true
+    canonical_type: "Research"
+
+  "06 Sources":
+    purpose: "Source knowledge."
+    authoritative: true
+    canonical_type: "Source"
+
+  "07 Methods":
+    purpose: "Methodological knowledge."
+    authoritative: true
+    canonical_type: "Method"
+
+  "08 Meta":
+    purpose: "Meta-level knowledge."
+    authoritative: true
+    canonical_type: "Meta"
+
+  "98 Templates":
+    purpose: "Reusable note templates."
+    authoritative: false
+
+  "99 Archive":
+    purpose: "Archived knowledge."
+    authoritative: true
+    canonical_type: "Archive"
+
+
+# ============================================================================
+# 7. PROVENANCE
+# ============================================================================
+
+provenance:
+
+  fields:
+
+    origin_type:
+      type: "string"
+      required: true
+      description: "Type of originating material."
+
+    origin_id:
+      type: "string"
+      required: false
+      description: "Actual identifier of the originating object, when available."
+
+    origin_path:
+      type: "string"
+      required: false
+      description: "Actual path of the originating object, when available."
+
+    original_text:
+      type: "string"
+      required: false
+
+    created_at:
+      type: "datetime"
+      required: false
+
+    derived_from:
+      type: "array"
+      items: "string"
+      required: false
+      description: "Actual identifiers of knowledge objects from which this object was derived."
+
+    transformation:
+      type: "string"
+      required: false
+      description: "Meaningful transformation applied to the source."
+
+  rules:
+    - "Only actual identifiers may be recorded."
+    - "Unknown information must remain unknown."
+    - "Provenance must not be fabricated."
+
+
+# ============================================================================
+# 8. RELATIONS
+# ============================================================================
+
+relations:
+
+  canonical_types:
+
+    supports:
+      description: "Provides support for another knowledge object."
+
+    challenges:
+      description: "Raises a substantive challenge to another knowledge object."
+
+    extends:
+      description: "Extends the scope or implications of another knowledge object."
+
+    refines:
+      description: "Makes another knowledge object more precise or developed."
+
+    qualifies:
+      description: "Adds a qualification or limiting condition."
+
+    contrasts:
+      description: "Presents a meaningful contrast."
+
+    depends_on:
+      description: "Requires another knowledge object conceptually or methodologically."
+
+    derived_from:
+      description: "Knowledge was derived from another knowledge object."
+
+    evidence_for:
+      description: "Provides evidence supporting another knowledge object."
+
+    evidence_against:
+      description: "Provides evidence against another knowledge object."
+
+    methodological_relation:
+      description: "Meaningful methodological relationship."
+
+    conceptual_relation:
+      description: "Meaningful conceptual relationship."
+
+    historical_relation:
+      description: "Meaningful historical relationship."
+
+    contextual_relation:
+      description: "Meaningful contextual relationship."
+
+  relation_object:
+
+    relation_id:
+      type: "string"
+      required: true
+
+    source_id:
+      type: "string"
+      required: true
+
+    target_id:
+      type: "string"
+      required: true
+
+    type:
+      type: "relation_type"
+      required: true
+
+    justification:
+      type: "string"
+      required: true
+
+    evidence:
+      type: "array"
+      items: "string"
+      required: false
+
+    confidence:
+      type: "confidence"
+      required: true
+
+    status:
+      type: "relation_status"
+      required: true
+
+  rules:
+    - "source_id must resolve to an actual knowledge object."
+    - "target_id must resolve to an actual knowledge object."
+    - "A relation must have semantic justification."
+    - "Similarity alone is insufficient."
+    - "A relation proposal is not automatically an authoritative relation."
+    - "Unresolved targets must not be fabricated."
+
+
+relation_status:
+
+  values:
+    proposed:
+      description: "Detected or generated by analysis but not yet authoritative."
+
+    approved:
+      description: "Explicitly approved as authoritative."
+
+    rejected:
+      description: "Reviewed and rejected."
+
+    needs_review:
+      description: "Insufficient evidence or unresolved ambiguity."
+
+
+# ============================================================================
+# 9. COMPARISON
+# ============================================================================
+
+comparison:
+
+  purpose: >
+    Determine whether a knowledge unit represents existing knowledge,
+    modifies existing knowledge, should be integrated with existing knowledge,
+    or represents meaningful independent knowledge.
+
+  dimensions:
+
+    semantic_similarity:
+      description: "Degree of semantic overlap."
+
+    conceptual_identity:
+      description: "Whether the objects represent substantially the same underlying knowledge."
+
+    independent_value:
+      description: "Whether the candidate contributes meaningful independent information."
+
+    evidential_difference:
+      description: "Whether the candidate contains materially different evidence."
+
+    contextual_difference:
+      description: "Whether context materially changes the meaning or applicability."
+
+    theoretical_difference:
+      description: "Whether the candidate represents a meaningfully different theoretical position."
+
+    methodological_difference:
+      description: "Whether the candidate differs meaningfully in method or methodology."
+
+    experiential_difference:
+      description: "Whether the candidate represents a distinct lived or experiential perspective."
+
+  rules:
+    - "Surface wording must not determine identity."
+    - "Similarity scores are evidence, not decisions."
+    - "High similarity can still represent independent knowledge."
+    - "Low similarity does not guarantee conceptual independence."
+    - "Meaning and conceptual structure take precedence over wording."
+
+
+# ============================================================================
+# 10. KNOWLEDGE DECISION MODEL
+# ============================================================================
+
+knowledge_decision:
+
+  CREATE:
+    meaning: "Create a new knowledge object."
+    conditions:
+      - "Meaningful knowledge is insufficiently represented."
+      - "The knowledge unit is sufficiently understood."
+      - "Its proposed type is defensible."
+    result: "new_object"
+
+  UPDATE:
+    meaning: "Update an existing knowledge object."
+    conditions:
+      - "The underlying knowledge identity is substantially the same."
+      - "Meaningful new information is present."
+    examples:
+      - "clarification"
+      - "correction"
+      - "additional evidence"
+      - "refinement"
+      - "qualification"
+      - "new context"
+
+  MERGE:
+    meaning: "Integrate multiple knowledge objects into a coherent representation."
+    conditions:
+      - "The objects represent the same conceptual unit."
+      - "Integration provides meaningful value."
+      - "Meaningful distinctions can be preserved."
+
+  DO_NOT_IMPORT:
+    meaning: "Do not add the candidate as authoritative knowledge."
+    conditions:
+      - "The candidate substantially repeats existing knowledge."
+      - "No meaningful independent value is identified."
+
+  ARCHIVE:
+    meaning: "Move existing authoritative knowledge into archival status."
+    conditions:
+      - "Archival justification exists."
+      - "The action is explicitly authorized."
+
+  NEEDS_REVIEW:
+    meaning: "Suspend the decision pending human review."
+    conditions:
+      - "Evidence is insufficient."
+      - "Meaning is ambiguous."
+      - "Identity is uncertain."
+      - "Multiple interpretations remain plausible."
+      - "Potential conflict is unresolved."
+      - "A consequential decision cannot be safely determined."
+
+  NO_ACTION:
+    meaning: "Make no authoritative modification."
+    conditions:
+      - "No justified modification is currently warranted."
+
+
+# ============================================================================
+# 11. DUPLICATE SEMANTICS
+# ============================================================================
+
+duplicate:
+
+  definition: >
+    A candidate is a duplicate when it substantially repeats existing
+    authoritative knowledge without meaningful independent value.
+
+  required_analysis:
+    - "semantic overlap"
+    - "conceptual identity"
+    - "independent value"
+    - "context"
+    - "evidence"
+    - "meaningful distinctions"
+
+  prohibited_reasoning:
+    - "Similarity score alone."
+    - "Matching title alone."
+    - "Matching keywords alone."
+    - "Similar wording alone."
+
+  preferred_action:
+    "DO_NOT_IMPORT"
+
+
+# ============================================================================
+# 12. UPDATE SEMANTICS
+# ============================================================================
+
+update:
+
+  definition: >
+    An update occurs when a candidate represents the same underlying knowledge
+    unit as an existing object while contributing meaningful additional value.
+
+  valid_additions:
+    - "clarification"
+    - "correction"
+    - "new evidence"
+    - "refinement"
+    - "qualification"
+    - "context"
+
+  preservation_requirements:
+    - "Existing meaningful information must not be silently erased."
+    - "Provenance must remain traceable."
+    - "The relationship between previous and updated knowledge should remain understandable."
+
+
+# ============================================================================
+# 13. MERGE SEMANTICS
+# ============================================================================
+
+merge:
+
+  definition: >
+    A merge integrates knowledge objects representing the same conceptual unit
+    when integration preserves their meaningful distinctions.
+
+  requirements:
+    - "Conceptual identity must be sufficiently established."
+    - "Meaningful distinctions must be preserved."
+    - "Conflicting positions must not be collapsed without justification."
+    - "Provenance of merged knowledge must remain traceable."
+    - "Uncertain merges should result in NEEDS_REVIEW."
+
+  prohibited:
+    - "Merge based solely on semantic similarity."
+    - "Merge solely to reduce note count."
+    - "Merge that destroys meaningful theoretical distinctions."
+    - "Merge that removes provenance."
+
+
+# ============================================================================
+# 14. NOVELTY
+# ============================================================================
+
+novelty:
+
+  definition: >
+    Novelty represents whether meaningful knowledge is insufficiently
+    represented by the existing knowledge system.
+
+  possible_results:
+    - "meaningfully_new"
+    - "partially_represented"
+    - "substantially_represented"
+    - "uncertain"
+
+  rules:
+    - "Novelty does not require total semantic uniqueness."
+    - "Related knowledge may still be novel."
+    - "Novelty must be evaluated against retrieved actual candidates."
+
+
+# ============================================================================
+# 15. CORE ANALYSIS
+# ============================================================================
+
+core:
+
+  definition: >
+    Core represents approved foundational or governing theoretical knowledge
+    used as the current reference for the system.
+
+  possible_relationships:
+    - "supports_core"
+    - "challenges_core"
+    - "extends_core"
+    - "refines_core"
+    - "qualifies_core"
+    - "contrasts_with_core"
+    - "no_meaningful_core_relation"
+    - "potential_core_conflict"
+    - "insufficient_evidence"
+
+  requirements:
+    - "Core must be resolved from actual approved Core knowledge."
+    - "Core must not be fabricated."
+    - "Core must not be inferred solely from model memory."
+    - "Potential conflicts must be preserved."
+    - "Core changes must remain explicitly governed."
+
+  conflict:
+    fields:
+
+      existing_position:
+        type: "string"
+        required: true
+
+      proposed_position:
+        type: "string"
+        required: true
+
+      evidence_for_existing:
+        type: "array"
+        items: "string"
+        required: false
+
+      evidence_for_proposed:
+        type: "array"
+        items: "string"
+        required: false
+
+      explanation:
+        type: "string"
+        required: true
+
+      status:
+        type: "conflict_status"
+        required: true
+
+
+conflict_status:
+
+  values:
+    potential:
+      description: "Possible conflict detected."
+
+    confirmed:
+      description: "Conflict supported by sufficient analysis."
+
+    unresolved:
+      description: "Conflict exists but cannot currently be resolved."
+
+    resolved:
+      description: "Conflict has been explicitly reviewed and resolved."
+
+
+# ============================================================================
+# 16. CONFIDENCE
+# ============================================================================
+
+confidence:
+
+  definition: >
+    Analytical confidence in the validity of a proposed interpretation,
+    classification, comparison, relation, or action.
+
+  range:
+    minimum: 0.0
+    maximum: 1.0
+
+  default_threshold: 0.60
+
+  bands:
+
+    low:
+      range: [0.00, 0.59]
+      recommended_state: "NEEDS_REVIEW"
+
+    moderate:
+      range: [0.60, 0.79]
+      recommended_state: "PROPOSAL_REQUIRES_APPROVAL"
+
+    high:
+      range: [0.80, 1.00]
+      recommended_state: "PROPOSAL_REQUIRES_APPROVAL"
+
+  rules:
+    - "Confidence is analytical, not authoritative."
+    - "High confidence does not authorize execution."
+    - "Low confidence should normally trigger review."
+    - "Confidence should be supported by reasoning and evidence."
+
+
+# ============================================================================
+# 17. ACTION OBJECT
+# ============================================================================
+
+action:
+
+  canonical_actions:
+    - "CREATE"
+    - "UPDATE"
+    - "MERGE"
+    - "DO_NOT_IMPORT"
+    - "ARCHIVE"
+    - "NEEDS_REVIEW"
+    - "NO_ACTION"
+
+  fields:
+
+    proposed_action:
+      type: "action_type"
+      required: true
+
+    target_id:
+      type: "string"
+      required: false
+      description: "Actual existing target ID when applicable."
+
+    target_ids:
+      type: "array"
+      items: "string"
+      required: false
+      description: "Actual existing target IDs for multi-object actions."
+
+    target_path:
+      type: "string"
+      required: false
+      description: "Actual existing target path when available."
+
+    destination_folder:
+      type: "string"
+      required: false
+
+    generated_note:
+      type: "string"
+      required: false
+
+    reasoning:
+      type: "string"
+      required: true
+
+    evidence:
+      type: "array"
+      items: "string"
+      required: false
+
+    confidence:
+      type: "confidence"
+      required: true
+
+    status:
+      type: "proposal_status"
+      required: true
+
+  rules:
+    - "An action is a proposal until explicitly approved."
+    - "Targets must come from verified retrieval."
+    - "Missing targets must not be invented."
+    - "Execution must validate the approved proposal before changing authoritative state."
+
+
+proposal_status:
+
+  values:
+    draft:
+      description: "Proposal is being generated or analyzed."
+
+    proposed:
+      description: "Proposal is ready for human review."
+
+    approved:
+      description: "Proposal has received explicit approval."
+
+    rejected:
+      description: "Proposal was explicitly rejected."
+
+    executed:
+      description: "Approved proposal was executed."
+
+    failed:
+      description: "Approved execution failed."
+
+    needs_review:
+      description: "Proposal cannot safely proceed without further review."
+
+
+# ============================================================================
+# 18. HUMAN REVIEW
+# ============================================================================
+
+human_review:
+
+  review_object:
+
+    original_input:
+      required: true
+
+    extracted_knowledge_units:
+      required: true
+
+    proposed_type:
+      required: true
+
+    retrieved_candidates:
+      required: true
+
+    evidence:
+      required: true
+
+    duplicate_analysis:
+      required: true
+
+    update_analysis:
+      required: true
+
+    merge_analysis:
+      required: true
+
+    novelty_analysis:
+      required: true
+
+    relation_analysis:
+      required: true
+
+    core_analysis:
+      required: true
+
+    proposed_destination:
+      required: true
+
+    generated_note:
+      required: false
+
+    proposed_action:
+      required: true
+
+    confidence:
+      required: true
+
+    reasoning:
+      required: true
+
+    uncertainty:
+      required: false
+
+    provenance:
+      required: true
+
+  approval:
+
+    approved:
+      type: "boolean"
+      required: true
+      default: false
+
+    approved_action:
+      type: "action_type"
+      required: false
+      default: null
+
+    user_note:
+      type: "string"
+      required: false
+      default: null
+
+    timestamp:
+      type: "datetime"
+      required: false
+
+    scope:
+      type: "approval_scope"
+      required: false
+
+  approval_scope:
+
+    action:
+      type: "action_type"
+      required: true
+
+    target_ids:
+      type: "array"
+      items: "string"
+      required: false
+
+    destination:
+      type: "string"
+      required: false
+
+    limitations:
+      type: "array"
+      items: "string"
+      required: false
+
+  rules:
+    - "Approval must be explicit."
+    - "Approval must be human."
+    - "Approval must be recorded."
+    - "Approval applies only to its defined scope."
+    - "AI cannot approve its own proposal."
+    - "Material changes to an approved proposal require renewed approval."
+
+
+# ============================================================================
+# 19. AUDIT
+# ============================================================================
+
+audit:
+
+  event:
+
+    event_id:
+      type: "string"
+      required: true
+
+    timestamp:
+      type: "datetime"
+      required: true
+
+    actor:
+      type: "string"
+      required: true
+
+    input_id:
+      type: "string"
+      required: false
+
+    knowledge_unit_ids:
+      type: "array"
+      items: "string"
+      required: false
+
+    proposed_action:
+      type: "action_type"
+      required: false
+
+    approved_action:
+      type: "action_type"
+      required: false
+
+    approval_reference:
+      type: "string"
+      required: false
+
+    target_ids:
+      type: "array"
+      items: "string"
+      required: false
+
+    result:
+      type: "string"
+      required: true
+
+    reasoning:
+      type: "string"
+      required: false
+
+    provenance:
+      type: "provenance"
+      required: false
+
+  rules:
+    - "Audit events should be append-oriented."
+    - "Execution events must be traceable to approval."
+    - "Rejected actions should remain distinguishable."
+    - "Failed actions should remain distinguishable."
+    - "Audit history must not be silently altered to conceal prior events."
+
+
+# ============================================================================
+# 20. PROCESSING PIPELINE
+# ============================================================================
+
+pipeline:
+
+  canonical_stages:
+
+    - "INPUT"
+    - "CLEAN"
+    - "EXTRACT_KNOWLEDGE_UNITS"
+    - "CLASSIFY"
+    - "RETRIEVE_EXISTING_CANDIDATES"
+    - "COMPARE"
+    - "CHECK_DUPLICATE"
+    - "CHECK_UPDATE"
+    - "CHECK_MERGE"
+    - "CHECK_NOVELTY"
+    - "CHECK_REAL_RELATIONS"
+    - "CHECK_CORE_RELATION"
+    - "CHECK_CORE_CONFLICT"
+    - "PROPOSE_FOLDER"
+    - "GENERATE_CLEAN_NOTE"
+    - "CALCULATE_CONFIDENCE"
+    - "APPLY_CONFIDENCE_GUARD"
+    - "PROPOSE_ACTION"
+    - "EXPLAIN_REASONING"
+    - "WAIT_FOR_HUMAN_APPROVAL"
+    - "EXECUTE_APPROVED_ACTION"
+    - "RECORD_AUDIT_EVENT"
+
+  semantic_boundary:
+
+    analysis_phase:
+      allowed:
+        - "read"
+        - "parse"
+        - "clean"
+        - "extract"
+        - "classify"
+        - "retrieve"
+        - "compare"
+        - "analyze"
+        - "generate"
+        - "propose"
+        - "explain"
+
+      authoritative_write:
+        allowed: false
+
+    approval_phase:
+      purpose: "Human evaluation of the proposal."
+      authoritative_write:
+        allowed: false
+
+    execution_phase:
+      condition: "Explicit approval exists."
+      requirements:
+        - "Validate approval."
+        - "Validate action."
+        - "Validate target."
+        - "Validate scope."
+        - "Preserve provenance."
+        - "Preserve meaning."
+        - "Record audit event."
+
+
+# ============================================================================
+# 21. VALIDATION
+# ============================================================================
+
+validation:
+
+  structural:
+
+    - "Required fields must exist."
+    - "Enum values must be canonical."
+    - "Identifiers must be structurally valid."
+    - "Confidence must be within the defined range."
+
+  provenance:
+
+    - "Origin must be represented."
+    - "Derived-from references must resolve when present."
+    - "Unknown provenance must not be fabricated."
+
+  retrieval:
+
+    - "Referenced objects must actually exist."
+    - "Identifiers must resolve."
+    - "Paths must resolve when supplied."
+    - "No guessed target may enter an authoritative proposal."
+
+  relations:
+
+    - "Source must resolve."
+    - "Target must resolve."
+    - "Relation type must be canonical."
+    - "Justification must exist."
+
+  comparison:
+
+    - "Duplicate decisions must not rely exclusively on similarity."
+    - "Merge decisions must account for meaningful distinctions."
+    - "Novelty must consider actual retrieved candidates."
+
+  core:
+
+    - "Core references must resolve to approved Core knowledge."
+    - "Potential Core conflicts must remain visible."
+    - "Core changes must not occur through ordinary analytical processing."
+
+  approval:
+
+    - "Approval must exist before execution."
+    - "Approved action must match executed action."
+    - "Execution must remain within approved scope."
+
+  safety:
+
+    - "No silent deletion."
+    - "No fabricated references."
+    - "No unauthorized authoritative modification."
+    - "No silent meaning destruction."
+    - "No unresolved ambiguity treated as certainty."
+
+
+# ============================================================================
+# 22. SYSTEM LAYER SEMANTICS
+# ============================================================================
+
+system_layers:
+
+  Knowledge:
+    definition: "Authoritative research, conceptual, experiential, methodological, and related project knowledge."
+
+  Memory:
+    definition: >
+      Storage, indexing, embedding, and retrieval infrastructure used to
+      support access to knowledge and other information.
+    authoritative_by_default: false
+
+  Models:
+    definition: >
+      Computational systems used for inference, generation, classification,
+      embedding, analysis, or other model operations.
+    authoritative_by_default: false
+
+  Retrieval:
+    definition: >
+      Infrastructure that finds actual candidate objects relevant to a query.
+    decision_making_authority: false
+
+  Knowledge_Management:
+    definition: >
+      Processes that analyze, classify, compare, relate, and propose changes
+      to knowledge.
+
+  Execution:
+    definition: >
+      Mechanisms that apply explicitly approved changes to authoritative state.
+
+  Governance:
+    definition: >
+      Rules defining authority, permissions, approval, safety, and execution boundaries.
+
+  principle:
+    - "No layer inherits the authority of another layer merely by technical access."
+
+
+# ============================================================================
+# 23. KNOWLEDGE VS. MEMORY
+# ============================================================================
+
+knowledge_memory_boundary:
+
+  rules:
+    - "Memory storage is not automatically authoritative knowledge."
+    - "An embedding is not authoritative knowledge."
+    - "A vector record is not authoritative knowledge."
+    - "A cache entry is not authoritative knowledge."
+    - "A retrieval result is not automatically authoritative knowledge."
+    - "Storage location does not determine semantic authority."
+
+
+# ============================================================================
+# 24. MODEL OUTPUT
+# ============================================================================
+
+model_output:
+
+  status:
+    default: "non_authoritative"
+
+  possible_roles:
+    - "analysis"
+    - "interpretation"
+    - "hypothesis"
+    - "draft"
+    - "proposal"
+    - "candidate_knowledge"
+
+  rule:
+    "Generated output becomes authoritative knowledge only through the governed Knowledge Management process."
+
+
+# ============================================================================
+# 25. DATA SAFETY
+# ============================================================================
+
+data_safety:
+
+  production_knowledge:
+    principle: >
+      Authoritative production knowledge must not be exposed to unrestricted
+      autonomous modification.
+
+  testing:
+    preferred:
+      - "synthetic fixtures"
+      - "test copies"
+      - "sandbox environments"
+      - "controlled test vaults"
+
+  sensitive_configuration:
+    excluded_from_schema:
+      - "API keys"
+      - "passwords"
+      - "authentication tokens"
+      - "private credentials"
+      - "private connection strings"
+      - "machine-specific secrets"
+
+  principle:
+    "The schema defines semantic structure, not secret configuration."
+
+
+# ============================================================================
+# 26. AGENT COMPATIBILITY
+# ============================================================================
+
+agent_compatibility:
+
+  principle: >
+    Any AI system, coding agent, autonomous agent, orchestration system, or
+    automation interacting with Knowledge Management must preserve the
+    semantics defined by this schema.
+
+  requirements:
+    - "Use canonical knowledge types."
+    - "Use canonical action states."
+    - "Use canonical relation types."
+    - "Preserve provenance."
+    - "Preserve meaning."
+    - "Preserve meaningful distinctions."
+    - "Never invent targets."
+    - "Never treat confidence as authorization."
+    - "Never treat retrieval as decision-making."
+    - "Stop when required information cannot be verified."
+    - "Request human review when ambiguity materially affects the decision."
+
+
+# ============================================================================
+# 27. PROVIDER AND MODEL INDEPENDENCE
+# ============================================================================
+
+provider_independence:
+
+  requirements:
+    - "No schema rule may depend on a specific AI provider."
+    - "No schema rule may depend on a specific model."
+    - "No schema rule may depend on a specific embedding model."
+    - "No schema rule may depend on a specific coding agent."
+    - "No schema rule may depend on a specific orchestration framework."
+    - "Implementations may be replaced without changing knowledge semantics."
+
+  principle:
+    "Capability may change; semantic authority does not."
+
+
+# ============================================================================
+# 28. CHANGE MANAGEMENT
+# ============================================================================
+
+schema_changes:
+
+  authority:
+    description: >
+      Changes to this schema alter the Knowledge Management contract.
+
+  requirements:
+    - "Schema changes must be intentionally reviewed."
+    - "Schema versions must be explicit."
+    - "Breaking semantic changes require a major version change."
+    - "Backward-compatible additions should use a minor version change."
+    - "Non-semantic corrections may use a patch version change."
+    - "Existing authoritative knowledge must not be silently invalidated."
+    - "Migration requirements must be understood before applying breaking changes."
+
+
+# ============================================================================
+# 29. DEFAULT SAFE BEHAVIOR
+# ============================================================================
+
+default_behavior:
+
+  unresolved_identity:
+    action: "NEEDS_REVIEW"
+
+  unresolved_relation:
+    action: "NEEDS_REVIEW"
+
+  unresolved_core_conflict:
+    action: "NEEDS_REVIEW"
+
+  insufficient_evidence:
+    action: "NEEDS_REVIEW"
+
+  fabricated_target_risk:
+    action: "STOP"
+
+  ambiguous_consequential_action:
+    action: "STOP_AND_REQUEST_REVIEW"
+
+  unauthorized_write:
+    action: "STOP"
+
+  silent_data_loss_risk:
+    action: "STOP_AND_PRESERVE_INFORMATION"
+
+
+# ============================================================================
+# 30. CANONICAL SEMANTIC RULES
+# ============================================================================
+
+canonical_rules:
+
+  - "One input does not necessarily equal one knowledge unit."
+  - "One knowledge unit does not necessarily equal one note."
+  - "Similarity does not equal identity."
+  - "Similarity does not equal duplication."
+  - "Similarity does not equal relation."
+  - "Retrieval does not equal decision."
+  - "Model output does not equal authoritative knowledge."
+  - "Confidence does not equal authorization."
+  - "Technical write access does not equal permission."
+  - "Archive does not equal deletion."
+  - "Related does not equal duplicate."
+  - "Different wording does not necessarily mean different knowledge."
+  - "Similar wording does not necessarily mean the same knowledge."
+  - "Meaningful distinctions must be preserved."
+  - "Provenance must be preserved."
+  - "Unknown information must not be fabricated."
+  - "Ambiguity must remain visible."
+  - "Core conflicts must not be silently resolved."
+  - "Authoritative changes require governed approval."
+  - "When safe resolution is impossible, stop and request review."
+
+
+# ============================================================================
+# 31. CANONICAL PRINCIPLE
+# ============================================================================
+
+canonical_principle: >
+  The Knowledge Management system of the LivingAuthenticity Environment
+  exists to preserve, organize, relate, and develop knowledge without
+  sacrificing meaning, provenance, distinctions, or human authority.
+  AI may perform powerful analysis, retrieval, comparison, interpretation,
+  generation, and proposal, but authoritative knowledge remains a governed
+  human-controlled state.
