@@ -8,6 +8,7 @@ It is a modular environment for working with research knowledge, supporting **RA
 
 * [AI Governance](AI-Governance.md) — principles, authority boundaries, and rules governing AI-assisted operations.
 * [Knowledge Schema](Knowledge-Schema.yaml) — the canonical schema for knowledge representation and management.
+* [Coding Agent Access](Coding-Agent-Access.md) — project-level filesystem boundary for coding agents versus production data.
 
 ## Technology
 

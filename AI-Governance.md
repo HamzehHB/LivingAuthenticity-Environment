@@ -1012,6 +1012,20 @@ provenance;
 
 no-silent-loss rules.
 
+### 31.1 Coding agent filesystem access
+
+Coding agents must not, by default, read, write, list, search, index, or mount the production persistent-data tree.
+
+The canonical, tool-independent contract is:
+
+`Coding-Agent-Access.md`
+
+That contract applies to every coding agent, regardless of vendor or product.
+
+Application models used to analyze or filter notes are not coding agents and are outside that filesystem denial.
+
+Explicit human approval, in the same request and limited to a named path, is required before a coding agent may inspect any part of production data.
+
 
 
 ---

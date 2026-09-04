@@ -206,6 +206,20 @@ The `.project/` directory is excluded through `.gitignore`.
 
 ---
 
+## Coding Agent Access
+
+Coding agents (Cursor, Codex, Claude Code, and others) must not access the production persistent-data tree by default.
+
+The canonical contract is:
+
+```text
+Coding-Agent-Access.md
+```
+
+The development workspace should open only the source-code repository, not the persistent data root.
+
+---
+
 ## Development Notes
 
 * Source code and persistent data should remain physically separable.
