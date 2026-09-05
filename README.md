@@ -1,54 +1,67 @@
-# LivingAuthenticity Environment
+LivingAuthenticity Environment
 
-The **LivingAuthenticity Environment** is the infrastructure for my research ecosystem.
+A modular research infrastructure for organizing, retrieving, and developing knowledge with AI assistance.
 
-It is a modular environment for working with research knowledge, supporting **RAG, knowledge ingestion, semantic search, and structured note organization**.
+The LivingAuthenticity Environment is a long-term research infrastructure designed to support the organization, processing, retrieval, and development of personal and research knowledge.
 
-## Architecture
+The project is built around a simple principle:
 
-* [AI Governance](AI-Governance.md) — principles, authority boundaries, and rules governing AI-assisted operations.
-* [Knowledge Schema](Knowledge-Schema.yaml) — the canonical schema for knowledge representation and management.
-* [Coding Agent Access](Coding-Agent-Access.md) — project-level filesystem boundary for coding agents versus production data.
+«AI assists the research process; the researcher remains the authority.»
 
-## Technology
+Architecture
 
-The current technical foundation is built primarily with **Python**, with **LanceDB** and **BGE-M3** retained as planned/frozen components of the architecture.
+- "AI Governance" (AI-Governance.md) — authority boundaries, permissions, and human approval.
+- "Knowledge Schema" (Knowledge-Schema.yaml) — the canonical knowledge representation schema.
+- "Coding Agent Access" (Coding-Agent-Access.md) — filesystem and data-access boundaries.
 
-## Configuration
+Current Status
 
-Configuration lives in `Config/` and is loaded by a single central
-loader (`Config/settings.py`):
+The project is currently focused on building its foundational infrastructure.
 
-* `paths.example.yaml` — the committed configuration template with
-  generic, portable placeholder values.
-* `paths.local.yaml` — your real machine-specific configuration.
-  Create it by copying the template; it is ignored by git and must
-  **never be committed or pushed**.
-* `models.yaml` — committed, machine-independent model settings.
+Implemented foundations include:
 
-Repository-internal locations (the repository root, `Logs/` and
-`Prompts/`) are derived automatically from the repository root.
+- Python project and package structure
+- Centralized configuration and path management
+- Text ingestion and parsing foundation
+- Semantic chunking
+- Dependency management
+- Testing infrastructure
+- Project documentation and governance
+- Separation of source code from persistent data
 
-See [SETUP.md](SETUP.md) for the full setup and configuration workflow.
+Advanced components such as semantic retrieval, embeddings, LanceDB, knowledge evolution, and agent systems belong to later development phases and are not represented as completed features.
 
-## Testing
+Technology
 
-The test suite runs with **pytest** from the repository root:
+The current foundation is built primarily with Python.
 
-```bash
+LanceDB and BGE-M3 are retained as planned components of the future architecture.
+
+Configuration
+
+Machine-specific configuration is kept outside the public repository through:
+
+"Config/paths.local.yaml"
+
+The committed "Config/paths.example.yaml" provides a portable template.
+
+See "SETUP.md" (SETUP.md) for development setup, configuration, dependencies, and testing.
+
+Testing
+
 pip install -r requirements-dev.txt
 python -m pytest
-```
 
-Tests use synthetic fixtures and temporary configurations only; they
-never read production data.
+Tests use synthetic fixtures and temporary configurations only.
 
-## Direction
+Direction
 
-The long-term direction is to develop an environment where research knowledge can be organized, connected, retrieved, evaluated, and evolved with AI assistance, while keeping human judgment and authority at the center.
+The long-term direction is to evolve from reliable infrastructure toward a research environment supporting:
 
-> **AI assists the research process; the researcher remains the authority.**
+Knowledge → Retrieval → Reasoning → Research → Knowledge Evolution
 
-## Status
+while remaining model-, provider-, and agent-independent.
+
+Status
 
 This project is under active development.
