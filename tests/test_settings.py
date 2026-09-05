@@ -3,35 +3,45 @@ from pathlib import Path
 import pytest
 
 from Config import settings
-from Config.settings import ConfigError, load_models, load_paths
+from Config.settings import ROOT, ConfigError, load_models, load_paths
 
 
-VALID_PATHS_YAML = """
-project:
-  root: "D:/repo-root"
+EXAMPLE_YAML = """
 data:
-  root: "D:/data-root"
+  root: "C:/LivingAuthenticity_Data"
 models:
-  bge_m3: "D:/data-root/Models/BGE_M3"
+  bge_m3: "C:/LivingAuthenticity_Data/Models/BGE_M3"
 vector_db:
-  lancedb: "D:/data-root/Database/Vector_Database"
+  lancedb: "C:/LivingAuthenticity_Data/Database/Vector_Database"
 memory:
-  root: "D:/data-root/Memory"
+  root: "C:/LivingAuthenticity_Data/Memory"
 obsidian:
-  vault: "D:/data-root/Knowledge/Obsidian"
+  vault: "C:/LivingAuthenticity_Data/Knowledge/Obsidian"
 zotero:
-  library: "D:/data-root/Knowledge/Zotero"
+  library: "C:/LivingAuthenticity_Data/Knowledge/Zotero"
 exports:
-  root: "D:/data-root/Knowledge/Exports"
+  root: "C:/LivingAuthenticity_Data/Knowledge/Exports"
 cache:
-  root: "D:/data-root/Database/Cache"
-logs:
-  root: "D:/repo-root/Logs"
-prompts:
-  root: "D:/repo-root/Prompts"
+  root: "C:/LivingAuthenticity_Data/Database/Cache"
 """
 
-VALID_MODELS_YAML = """
+LOCAL_OVERRIDE_YAML = """
+data:
+  root: "F:/MyData"
+vector_db:
+  lancedb: "F:/MyData/Database/Vector_Database"
+"""
+
+LOCAL_TRYING_TO_OVERRIDE_DERIVED_YAML = """
+project:
+  root: "Z:/Ignored"
+logs:
+  root: "Z:/Ignored"
+prompts:
+  root: "Z:/Ignored"
+"""
+
+MODELS_YAML = """
 embedding:
   active: "bge_m3"
 bge_m3:
@@ -47,45 +57,82 @@ def _write(directory: Path, name: str, content: str) -> Path:
     return path
 
 
-def test_load_paths_returns_valid_configuration(tmp_path):
-    _write(tmp_path, "paths.yaml", VALID_PATHS_YAML)
+def test_load_paths_without_local_file_returns_example_values(tmp_path):
+    _write(tmp_path, "paths.example.yaml", EXAMPLE_YAML)
 
     paths = load_paths(tmp_path)
 
-    assert paths["data"]["root"] == "D:/data-root"
-    assert paths["vector_db"]["lancedb"] == "D:/data-root/Database/Vector_Database"
+    assert paths["data"]["root"] == "C:/LivingAuthenticity_Data"
+    assert paths["vector_db"]["lancedb"] == (
+        "C:/LivingAuthenticity_Data/Database/Vector_Database"
+    )
 
 
-def test_load_paths_missing_file_raises_clear_error(tmp_path):
+def test_load_paths_local_file_overrides_example_values(tmp_path):
+    _write(tmp_path, "paths.example.yaml", EXAMPLE_YAML)
+    _write(tmp_path, "paths.local.yaml", LOCAL_OVERRIDE_YAML)
+
+    paths = load_paths(tmp_path)
+
+    assert paths["data"]["root"] == "F:/MyData"
+    assert paths["vector_db"]["lancedb"] == "F:/MyData/Database/Vector_Database"
+    assert paths["obsidian"]["vault"] == "C:/LivingAuthenticity_Data/Knowledge/Obsidian"
+
+
+def test_load_paths_always_derives_repository_internal_locations(tmp_path):
+    _write(tmp_path, "paths.example.yaml", EXAMPLE_YAML)
+    _write(tmp_path, "paths.local.yaml", LOCAL_TRYING_TO_OVERRIDE_DERIVED_YAML)
+
+    paths = load_paths(tmp_path)
+
+    assert paths["project"]["root"] == str(ROOT)
+    assert paths["logs"]["root"] == str(ROOT / "Logs")
+    assert paths["prompts"]["root"] == str(ROOT / "Prompts")
+
+
+def test_load_paths_missing_example_file_raises_clear_error(tmp_path):
     with pytest.raises(ConfigError, match="not found"):
         load_paths(tmp_path)
 
 
-def test_load_paths_missing_required_key_raises_clear_error(tmp_path):
-    content = VALID_PATHS_YAML.replace('  root: "D:/data-root"', '  root: ""', 1)
+def test_load_paths_empty_required_value_raises_clear_error(tmp_path):
+    content = EXAMPLE_YAML.replace(
+        '  root: "C:/LivingAuthenticity_Data"',
+        '  root: ""',
+        1,
+    )
 
-    _write(tmp_path, "paths.yaml", content)
+    _write(tmp_path, "paths.example.yaml", content)
 
     with pytest.raises(ConfigError, match="'data.root'"):
         load_paths(tmp_path)
 
 
+def test_load_paths_missing_required_key_raises_clear_error(tmp_path):
+    content = EXAMPLE_YAML.replace("vector_db:", "vector_db_removed:")
+
+    _write(tmp_path, "paths.example.yaml", content)
+
+    with pytest.raises(ConfigError, match="'vector_db.lancedb'"):
+        load_paths(tmp_path)
+
+
 def test_load_paths_invalid_yaml_raises_clear_error(tmp_path):
-    _write(tmp_path, "paths.yaml", "data: [unclosed")
+    _write(tmp_path, "paths.example.yaml", "data: [unclosed")
 
     with pytest.raises(ConfigError, match="Could not read"):
         load_paths(tmp_path)
 
 
 def test_load_paths_non_mapping_content_raises_clear_error(tmp_path):
-    _write(tmp_path, "paths.yaml", "- just\n- a list\n")
+    _write(tmp_path, "paths.example.yaml", "- just\n- a list\n")
 
     with pytest.raises(ConfigError, match="mapping"):
         load_paths(tmp_path)
 
 
 def test_load_models_returns_valid_configuration(tmp_path):
-    _write(tmp_path, "models.yaml", VALID_MODELS_YAML)
+    _write(tmp_path, "models.yaml", MODELS_YAML)
 
     models = load_models(tmp_path)
 
@@ -94,7 +141,7 @@ def test_load_models_returns_valid_configuration(tmp_path):
 
 
 def test_load_models_missing_active_model_section_raises_clear_error(tmp_path):
-    content = VALID_MODELS_YAML.replace("bge_m3:", "other_model:")
+    content = MODELS_YAML.replace("bge_m3:", "other_model:")
 
     _write(tmp_path, "models.yaml", content)
 
@@ -103,7 +150,7 @@ def test_load_models_missing_active_model_section_raises_clear_error(tmp_path):
 
 
 def test_load_models_invalid_dimension_raises_clear_error(tmp_path):
-    content = VALID_MODELS_YAML.replace("dimension: 1024", "dimension: 0")
+    content = MODELS_YAML.replace("dimension: 1024", "dimension: 0")
 
     _write(tmp_path, "models.yaml", content)
 
@@ -112,7 +159,7 @@ def test_load_models_invalid_dimension_raises_clear_error(tmp_path):
 
 
 def test_load_models_non_boolean_normalize_raises_clear_error(tmp_path):
-    content = VALID_MODELS_YAML.replace("normalize: true", 'normalize: "true"')
+    content = MODELS_YAML.replace("normalize: true", 'normalize: "true"')
 
     _write(tmp_path, "models.yaml", content)
 
@@ -121,7 +168,7 @@ def test_load_models_non_boolean_normalize_raises_clear_error(tmp_path):
 
 
 def test_load_models_invalid_batch_size_raises_clear_error(tmp_path):
-    content = VALID_MODELS_YAML.replace("batch_size: 16", "batch_size: 0")
+    content = MODELS_YAML.replace("batch_size: 16", "batch_size: 0")
 
     _write(tmp_path, "models.yaml", content)
 
@@ -131,4 +178,7 @@ def test_load_models_invalid_batch_size_raises_clear_error(tmp_path):
 
 def test_repository_configuration_loads_successfully():
     assert "vector_db" in settings.PATHS
+    assert settings.PATHS["project"]["root"] == str(ROOT)
+    assert settings.PATHS["logs"]["root"] == str(ROOT / "Logs")
+    assert settings.PATHS["prompts"]["root"] == str(ROOT / "Prompts")
     assert settings.MODELS["embedding"]["active"] == "bge_m3"

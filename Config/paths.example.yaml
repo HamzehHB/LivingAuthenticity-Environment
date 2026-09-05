@@ -1,0 +1,42 @@
+# Configuration template for the LivingAuthenticity Environment.
+#
+# HOW TO USE
+# ----------
+# 1. Copy this file next to itself and rename the copy to:
+#
+#        paths.local.yaml
+#
+# 2. Adjust the values in your paths.local.yaml for your machine.
+#
+# NOTES
+# -----
+# * This file is a committed template. It contains only generic,
+#   portable suggestions and never real machine-specific values.
+# * paths.local.yaml is ignored by git and must never be committed.
+# * The repository-internal locations ("project", "logs" and
+#   "prompts") are always derived automatically from the repository
+#   root. Do not set them in this file or in paths.local.yaml.
+
+data:
+  root: "C:/LivingAuthenticity_Data"
+
+models:
+  bge_m3: "C:/LivingAuthenticity_Data/Models/Embedding_Model/BGE_M3"
+
+vector_db:
+  lancedb: "C:/LivingAuthenticity_Data/Database/Vector_Database"
+
+memory:
+  root: "C:/LivingAuthenticity_Data/Memory"
+
+obsidian:
+  vault: "C:/LivingAuthenticity_Data/Knowledge/Obsidian"
+
+zotero:
+  library: "C:/LivingAuthenticity_Data/Knowledge/Zotero"
+
+exports:
+  root: "C:/LivingAuthenticity_Data/Knowledge/Exports"
+
+cache:
+  root: "C:/LivingAuthenticity_Data/Database/Cache"

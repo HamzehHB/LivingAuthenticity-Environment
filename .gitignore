@@ -14,6 +14,9 @@ Venv/
 # ---------- Environment ----------
 .env
 
+# ---------- Local machine configuration ----------
+Config/paths.local.yaml
+
 # ---------- IDE ----------
 .vscode/
 .clinerules/
