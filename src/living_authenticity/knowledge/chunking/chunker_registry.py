@@ -24,7 +24,10 @@ class ChunkerRegistry:
 
         extension = Path(file_path).suffix.lower()
 
-        return self._chunkers.get(
-            extension,
-            ParagraphChunker(),
-        )
+        if extension not in self._chunkers:
+
+            raise ValueError(
+                f"No chunker registered for '{extension}'"
+            )
+
+        return self._chunkers[extension]

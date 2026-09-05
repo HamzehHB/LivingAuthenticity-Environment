@@ -6,7 +6,7 @@ class ParagraphChunker(BaseChunker):
     Chunker ساده بر اساس پاراگراف.
     """
 
-    def split(self, text: str):
+    def split(self, text: str) -> list[str]:
 
         paragraphs = [
             p.strip()

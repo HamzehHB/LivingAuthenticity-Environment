@@ -1,0 +1,4 @@
+# Dev-only dependencies (compiled with pip-compile into requirements-dev.txt).
+# Runtime dependencies come from requirements.txt via the constraints file.
+-c requirements.txt
+pytest
