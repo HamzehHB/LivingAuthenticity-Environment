@@ -12,7 +12,36 @@ It is a modular environment for working with research knowledge, supporting **RA
 
 ## Technology
 
-The current technical stack is built primarily with **Python**, **LanceDB**, and **BGE-M3**, with a modular architecture designed to remain independent of any specific AI model, provider, or agent.
+The current technical foundation is built primarily with **Python**, with **LanceDB** and **BGE-M3** retained as planned/frozen components of the architecture.
+
+## Configuration
+
+Configuration lives in `Config/` and is loaded by a single central
+loader (`Config/settings.py`):
+
+* `paths.example.yaml` — the committed configuration template with
+  generic, portable placeholder values.
+* `paths.local.yaml` — your real machine-specific configuration.
+  Create it by copying the template; it is ignored by git and must
+  **never be committed or pushed**.
+* `models.yaml` — committed, machine-independent model settings.
+
+Repository-internal locations (the repository root, `Logs/` and
+`Prompts/`) are derived automatically from the repository root.
+
+See [SETUP.md](SETUP.md) for the full setup and configuration workflow.
+
+## Testing
+
+The test suite runs with **pytest** from the repository root:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+```
+
+Tests use synthetic fixtures and temporary configurations only; they
+never read production data.
 
 ## Direction
 
