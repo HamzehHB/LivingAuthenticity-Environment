@@ -43,3 +43,21 @@ def test_ingest_markdown_fixture():
     assert result.parsed is not None
     assert result.parsed.note_type == "Observation"
     assert "Survival" in result.parsed.relations
+
+
+def test_ingest_strips_utf8_bom_before_processing(tmp_path):
+    note = tmp_path / "bom_note.md"
+    note.write_bytes(
+        "\ufeff".encode("utf-8")
+        + "Observation:\nPeople often lose the ability to enjoy calmness.\n".encode(
+            "utf-8"
+        )
+    )
+
+    result = _pipeline().ingest(str(note))
+
+    assert result.raw_text.startswith("Observation:")
+    assert "\ufeff" not in result.raw_text
+    assert result.parsed is not None
+    assert result.parsed.note_type == "Observation"
+    assert "calmness" in result.cleaned_text

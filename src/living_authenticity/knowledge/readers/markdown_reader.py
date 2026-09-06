@@ -5,11 +5,11 @@ from .base_reader import BaseReader
 
 class MarkdownReader(BaseReader):
     """
-    Reader for Markdown files.
+    Reader for Markdown files (UTF-8, with or without BOM).
     """
 
     def read(self, file_path: str) -> str:
         path = Path(file_path)
 
-        with path.open("r", encoding="utf-8") as file:
+        with path.open("r", encoding="utf-8-sig") as file:
             return file.read()

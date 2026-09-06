@@ -3,7 +3,7 @@ from pathlib import Path
 
 class MetadataExtractor:
     """
-    Extracts metadata for each chunk.
+    Extracts file-level metadata for an ingested source file.
     """
 
     def extract(self, source: str):

@@ -8,6 +8,13 @@ from src.living_authenticity.security import (
 
 REPO = Path(__file__).resolve().parent.parent
 
+# Files that necessarily contain detection-pattern strings:
+# the pattern definition module and the detector's own test fixtures.
+PATTERN_DEFINITION_FILES = (
+    "src/living_authenticity/security/sensitive_data.py",
+    "tests/test_sensitive_data.py",
+)
+
 IGNORED_ENTRIES = (
     "Config/paths.local.yaml",
     ".project/",
@@ -55,6 +62,8 @@ def _tracked_files() -> list[str]:
 
 def test_no_known_secret_patterns_in_tracked_files():
     for path in _tracked_files():
+        if path in PATTERN_DEFINITION_FILES:
+            continue
         content = (REPO / path).read_text(encoding="utf-8", errors="replace")
         for pattern in SECRET_PATTERNS:
             assert pattern not in content, (
@@ -64,6 +73,8 @@ def test_no_known_secret_patterns_in_tracked_files():
 
 def test_production_and_repo_roots_absent_from_tracked_files():
     for path in _tracked_files():
+        if path in PATTERN_DEFINITION_FILES:
+            continue
         content = (REPO / path).read_text(encoding="utf-8", errors="replace")
         for prefix in MACHINE_SPECIFIC_PATH_PREFIXES:
             assert prefix not in content, (
@@ -104,3 +115,22 @@ def test_no_dynamic_or_unsafe_code_in_application_code():
                 offenders.append(f"{path.name}: {snippet!r}")
 
     assert not offenders, f"unsafe constructs found: {offenders}"
+
+
+def test_no_unsafe_yaml_loading_in_code():
+    unsafe_markers = (
+        "yaml.load(",
+        "yaml.unsafe_load(",
+        "yaml.full_load(",
+        "yaml.Loader",
+    )
+    offenders = []
+
+    for search_root in (REPO / "src", REPO / "Config"):
+        for path in search_root.rglob("*.py"):
+            content = path.read_text(encoding="utf-8")
+            for marker in unsafe_markers:
+                if marker in content:
+                    offenders.append(f"{path.name}: {marker!r}")
+
+    assert not offenders, f"unsafe YAML loading found: {offenders}"

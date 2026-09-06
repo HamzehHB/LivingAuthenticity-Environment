@@ -1,6 +1,13 @@
 from dataclasses import dataclass
 
+from src.living_authenticity.knowledge.chunking.chunker_registry import (
+    ChunkerRegistry,
+)
+from src.living_authenticity.knowledge.cleaning.cleaner import Cleaner
+from src.living_authenticity.knowledge.metadata.extractor import MetadataExtractor
+from src.living_authenticity.knowledge.parser.base_parser import BaseParser
 from src.living_authenticity.knowledge.parser.parsed_note import ParsedNote
+from src.living_authenticity.knowledge.readers.reader_registry import ReaderRegistry
 
 
 @dataclass
@@ -34,11 +41,11 @@ class IngestionPipeline:
 
     def __init__(
         self,
-        reader_registry,
-        chunker_registry,
-        cleaner,
-        metadata_extractor,
-        parser=None,
+        reader_registry: ReaderRegistry,
+        chunker_registry: ChunkerRegistry,
+        cleaner: Cleaner,
+        metadata_extractor: MetadataExtractor,
+        parser: BaseParser | None = None,
     ):
 
         self.reader_registry = reader_registry
