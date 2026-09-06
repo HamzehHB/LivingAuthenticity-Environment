@@ -1,6 +1,6 @@
 LivingAuthenticity Environment
 
-![Monica](monica.jpg)
+![Monica](Monica.jpg)
 
 «A modular research infrastructure for organizing, retrieving, and developing knowledge with AI assistance.»
 
@@ -12,9 +12,9 @@ The project is built around a simple principle:
 
 Architecture
 
-- "AI Governance" (AI-Governance.md) — authority boundaries, permissions, and human approval.
-- "Knowledge Schema" (Knowledge-Schema.yaml) — the canonical knowledge representation schema.
-- "Coding Agent Access" (Coding-Agent-Access.md) — filesystem and data-access boundaries.
+- [AI Governance](AI-Governance.md) — authority boundaries, permissions, and human approval.
+- [Knowledge Schema](Knowledge-Schema.yaml) — the canonical knowledge representation schema.
+- [Coding Agent Access](Coding-Agent-Access.md) — filesystem and data-access boundaries.
 
 Current Status
 
@@ -43,16 +43,20 @@ Configuration
 
 Machine-specific configuration is kept outside the public repository through:
 
-"Config/paths.local.yaml"
+`Config/paths.local.yaml`
 
-The committed "Config/paths.example.yaml" provides a portable template.
+The committed [Config/paths.example.yaml](Config/paths.example.yaml) provides a portable template.
 
-See "SETUP.md" (SETUP.md) for development setup, configuration, dependencies, and testing.
+See [SETUP.md](SETUP.md) for development setup, configuration, dependencies, and testing.
 
 Testing
 
+Install the dev dependencies ([requirements-dev.txt](requirements-dev.txt)) and run the test suite:
+
+```bash
 pip install -r requirements-dev.txt
 python -m pytest
+```
 
 Tests use synthetic fixtures and temporary configurations only.
 

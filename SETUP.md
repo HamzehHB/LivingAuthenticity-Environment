@@ -65,10 +65,7 @@ Config/paths.local.yaml
 ```
 
 which you create from the committed template:
-
-```text
-Config/paths.example.yaml
-```
+[Config/paths.example.yaml](Config/paths.example.yaml)
 
 This allows the project to remain independent of a specific machine or drive layout.
 
@@ -151,16 +148,13 @@ Contains database-related data such as:
 ## Configuration
 
 Configuration files are stored in:
-
-```text
-Config/
-```
+[Config/](Config/)
 
 Current configuration files include:
 
-* `paths.example.yaml`
-* `paths.local.yaml`
-* `models.yaml`
+* [`paths.example.yaml`](Config/paths.example.yaml)
+* `paths.local.yaml` (not committed)
+* [`models.yaml`](Config/models.yaml)
 
 ### `paths.example.yaml`
 
@@ -190,16 +184,16 @@ active embedding model and its dimension).
    your machine (persistent data root, model path, vector database,
    Obsidian vault, Zotero library, exports, and cache).
 
-3. Run the test suite (see Testing) to verify your configuration
+3. Run the test suite (see [Testing](#testing)) to verify your configuration
    loads correctly.
 
 Repository-internal locations — the repository root itself and the
-`Logs` and `Prompts` directories — are always derived automatically
+[`Logs`](Logs/) and [`Prompts`](Prompts/) directories — are always derived automatically
 from the repository root. They must not be set in
-`paths.example.yaml` or `paths.local.yaml`.
+[paths.example.yaml](Config/paths.example.yaml) or `paths.local.yaml`.
 
 If `Config/paths.local.yaml` is missing, the loader falls back to the
-generic values in `paths.example.yaml`. These values are placeholders
+generic values in [`paths.example.yaml`](Config/paths.example.yaml). These values are placeholders
 and should be replaced with machine-specific paths before using
 persistent data.
 
@@ -211,15 +205,11 @@ The project uses **pip-tools** for dependency management.
 
 ### Source dependencies
 
-```text
-requirements.in
-```
+[requirements.in](requirements.in)
 
 ### Resolved dependencies
 
-```text
-requirements.txt
-```
+[requirements.txt](requirements.txt)
 
 ### Regenerate dependencies
 
@@ -232,10 +222,8 @@ pip-compile requirements.in
 The project uses **pytest**. Dev-only dependencies are managed with
 pip-tools separately from the runtime dependencies:
 
-```text
-requirements-dev.in
-requirements-dev.txt
-```
+[requirements-dev.in](requirements-dev.in)
+[requirements-dev.txt](requirements-dev.txt)
 
 Install the dev dependencies:
 
@@ -279,10 +267,7 @@ The `.project/` directory is excluded through `.gitignore`.
 Coding agents (Cursor, Codex, Claude Code, and others) must not access the production persistent-data tree by default.
 
 The canonical contract is:
-
-```text
-Coding-Agent-Access.md
-```
+[Coding-Agent-Access.md](Coding-Agent-Access.md)
 
 The development workspace should open only the source-code repository, not the persistent data root.
 
@@ -294,7 +279,8 @@ The development workspace should open only the source-code repository, not the p
 * Persistent data should not be committed to the public repository.
 * Local model files should not be committed to the repository.
 * Project-specific paths should be configured through
-  `Config/paths.local.yaml`, created from `Config/paths.example.yaml`.
+  `Config/paths.local.yaml`, created from
+  [`Config/paths.example.yaml`](Config/paths.example.yaml).
 * AI models are not downloaded automatically.
 * Ollama is used for local LLM inference where configured.
 * Obsidian and Zotero serve as external knowledge sources.
