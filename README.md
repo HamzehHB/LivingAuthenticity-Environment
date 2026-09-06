@@ -1,6 +1,8 @@
 LivingAuthenticity Environment
 
-A modular research infrastructure for organizing, retrieving, and developing knowledge with AI assistance.
+![Monica](monica.jpg)
+
+«A modular research infrastructure for organizing, retrieving, and developing knowledge with AI assistance.»
 
 The LivingAuthenticity Environment is a long-term research infrastructure designed to support the organization, processing, retrieval, and development of personal and research knowledge.
 
