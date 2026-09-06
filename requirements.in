@@ -1,4 +1,5 @@
 sentence-transformers
 lancedb
 pyyaml
-pip-tools
+pyarrow
+numpy

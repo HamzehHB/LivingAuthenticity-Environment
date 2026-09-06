@@ -4,21 +4,43 @@
 #
 #    pip-compile requirements-dev.in
 #
+build==1.6.0
+    # via pip-tools
+click==8.4.2
+    # via
+    #   -c requirements.txt
+    #   pip-tools
 colorama==0.4.6
     # via
     #   -c requirements.txt
+    #   build
+    #   click
     #   pytest
 iniconfig==2.3.0
     # via pytest
 packaging==26.2
     # via
     #   -c requirements.txt
+    #   build
     #   pytest
+    #   wheel
+pip-tools==7.6.1
+    # via -r requirements-dev.in
 pluggy==1.6.0
     # via pytest
 pygments==2.20.0
     # via
     #   -c requirements.txt
     #   pytest
+pyproject-hooks==1.2.0
+    # via
+    #   build
+    #   pip-tools
 pytest==9.1.1
     # via -r requirements-dev.in
+wheel==0.48.0
+    # via pip-tools
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip
+# setuptools

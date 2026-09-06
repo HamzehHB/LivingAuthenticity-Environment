@@ -213,6 +213,9 @@ The project uses **pip-tools** for dependency management.
 
 ### Regenerate dependencies
 
+Dependency regeneration is a development task and requires the dev
+dependencies to be installed (`pip install -r requirements-dev.txt`).
+
 ```bash
 pip-compile requirements.in
 ```

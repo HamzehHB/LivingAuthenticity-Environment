@@ -10,8 +10,6 @@ annotated-types==0.7.0
     # via pydantic
 anyio==4.14.1
     # via httpx
-build==1.5.0
-    # via pip-tools
 certifi==2026.6.17
     # via
     #   httpcore
@@ -19,11 +17,9 @@ certifi==2026.6.17
 click==8.4.2
     # via
     #   huggingface-hub
-    #   pip-tools
     #   typer
 colorama==0.4.6
     # via
-    #   build
     #   click
     #   tqdm
 deprecation==2.1.0
@@ -77,6 +73,7 @@ networkx==3.6.1
     # via torch
 numpy==2.5.0
     # via
+    #   -r requirements.in
     #   lancedb
     #   scikit-learn
     #   scipy
@@ -84,16 +81,14 @@ numpy==2.5.0
     #   transformers
 packaging==26.2
     # via
-    #   build
     #   deprecation
     #   huggingface-hub
     #   lancedb
     #   transformers
-    #   wheel
-pip-tools==7.5.3
-    # via -r requirements.in
 pyarrow==24.0.0
-    # via lancedb
+    # via
+    #   -r requirements.in
+    #   lancedb
 pydantic==2.13.4
     # via
     #   lance-namespace-urllib3-client
@@ -102,10 +97,6 @@ pydantic-core==2.46.4
     # via pydantic
 pygments==2.20.0
     # via rich
-pyproject-hooks==1.2.0
-    # via
-    #   build
-    #   pip-tools
 python-dateutil==2.9.0.post0
     # via lance-namespace-urllib3-client
 pyyaml==6.0.3
@@ -164,9 +155,6 @@ typing-inspection==0.4.2
     # via pydantic
 urllib3==2.7.0
     # via lance-namespace-urllib3-client
-wheel==0.47.0
-    # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
 # setuptools
