@@ -14,8 +14,9 @@ implementation boundary in `.project/Current-Summer-Scope.md`.
 Facts verified against the repository at this checkpoint:
 
 * No secrets, credentials, API keys, tokens, or private keys exist in any
-  tracked file or anywhere in git history (pattern scan: `AKIA`, `ghp_`,
-  `github_pat_`, `xox*`, `BEGIN … PRIVATE KEY` — zero matches).
+  tracked file or anywhere in git history (pattern scan against the known
+  pattern list in `src/living_authenticity/security/sensitive_data.py` —
+  zero matches).
 * Git history **does** contain historical machine-specific filesystem paths
   (former `Config/paths.yaml` versions and an older workspace file). This is a
   documented residual risk (§5). No history rewriting is performed by agents.
@@ -34,6 +35,7 @@ Facts verified against the repository at this checkpoint:
   default**. Runtime data-processing components follow
   `.project/Local-Paths-Reference.md`; that access never extends to
   development agents, and knowing a path is not permission.
+* Reusable runtime security utilities live in `src/living_authenticity/security/`: a default-deny path boundary (`PathBoundary`) and value-safe sensitive-data detection (`find_secrets` / `contains_secret`). They are not yet wired into the ingestion pipeline — wiring lands with the checkpoint that introduces real input/output handling.
 
 ---
 
@@ -42,9 +44,9 @@ Facts verified against the repository at this checkpoint:
 Steps 1–5 are automated in `tests/test_repository_security.py` — keep it green:
 
 1. **Secret scan** — no known secret patterns in tracked files.
-2. **Machine-path scan** — the production data root
-   (`F:/LivingAuthenticity_Data`) and the repository's own machine path appear
-   in no tracked file (synthetic test fixtures are the only exception and use
+2. **Machine-path scan** — the configured production data root and the
+   repository's own machine path appear in no tracked file (the actual root
+   is defined only in `Config/paths.local.yaml`; synthetic test fixtures use
    invented values).
 3. **Ignore rules** — `.gitignore` covers `Config/paths.local.yaml`,
    `.project/`, `.clinerules/`, `Venv/`, `.env`, `Logs/`, and

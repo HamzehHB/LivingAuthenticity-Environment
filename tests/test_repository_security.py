@@ -1,27 +1,12 @@
 import subprocess
 from pathlib import Path
 
+from src.living_authenticity.security import (
+    MACHINE_SPECIFIC_PATH_PREFIXES,
+    SECRET_PATTERNS,
+)
+
 REPO = Path(__file__).resolve().parent.parent
-
-SECRET_PATTERNS = (
-    "AKIA",
-    "ghp_",
-    "github_pat_",
-    "xoxb",
-    "xoxp",
-    "xoxa",
-    "BEGIN RSA PRIVATE KEY",
-    "BEGIN OPENSSH PRIVATE KEY",
-    "BEGIN EC PRIVATE KEY",
-    "BEGIN PRIVATE KEY",
-)
-
-MACHINE_SPECIFIC_PATHS = (
-    "F:/LivingAuthenticity_Data",
-    "F:\\LivingAuthenticity_Data",
-    "E:/LivingAuthenticity_AI",
-    "E:\\LivingAuthenticity_AI",
-)
 
 IGNORED_ENTRIES = (
     "Config/paths.local.yaml",
@@ -80,7 +65,7 @@ def test_no_known_secret_patterns_in_tracked_files():
 def test_production_and_repo_roots_absent_from_tracked_files():
     for path in _tracked_files():
         content = (REPO / path).read_text(encoding="utf-8", errors="replace")
-        for prefix in MACHINE_SPECIFIC_PATHS:
+        for prefix in MACHINE_SPECIFIC_PATH_PREFIXES:
             assert prefix not in content, (
                 f"{path} contains machine-specific path {prefix!r}"
             )
