@@ -1,6 +1,8 @@
 LivingAuthenticity Environment
 
 ![Monica](Monica.jpg)
+*Just Monica felt right in this place.*
+[For Monica — Notes on Mind & Living](https://hamzehhb3.substack.com/p/for-monica)
 
 «A modular research infrastructure for organizing, retrieving, and developing knowledge with AI assistance.»
 
