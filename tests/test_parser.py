@@ -70,7 +70,41 @@ def test_parse_persian_labeled_note():
     assert parsed.open_questions
 
 
-def test_inbox_is_not_a_knowledge_type():
+def test_parse_empty_input():
+    parsed = ObsidianParser().parse("")
+
+    assert parsed.note_type == ""
+    assert parsed.body == ""
+    assert parsed.relations == []
+    assert parsed.tags == []
+    assert parsed.title == ""
+
+
+def test_parse_whitespace_only_input():
+    parsed = ObsidianParser().parse("   \n\n   \n")
+
+    assert parsed.note_type == ""
+    assert parsed.body == ""
+    assert parsed.relations == []
+    assert parsed.tags == []
+
+
+def test_parse_malformed_input_without_labels():
+    text = "Just some random text without any labels."
+    parsed = ObsidianParser().parse(text)
+
+    assert parsed.note_type == ""
+    assert text in parsed.body
+    assert parsed.relations == []
+    assert parsed.tags == []
+
+
+def test_parse_preserves_unicode_in_body():
+    text = "Observation:\nPeople o\u0301ften lose the ability.\n"
+    parsed = ObsidianParser().parse(text)
+
+    assert parsed.note_type == NoteType.OBSERVATION.value
+    assert "People o\u0301ften lose the ability." in parsed.body
     assert not hasattr(NoteType, "INBOX")
     assert {member.value for member in NoteType} == {
         "Core",
