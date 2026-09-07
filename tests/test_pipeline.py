@@ -5,6 +5,9 @@ from src.living_authenticity.knowledge.chunking.chunker_registry import ChunkerR
 from src.living_authenticity.knowledge.cleaning.cleaner import Cleaner
 from src.living_authenticity.knowledge.cleaning.normalizer import Normalizer
 from src.living_authenticity.knowledge.metadata.extractor import MetadataExtractor
+from src.living_authenticity.knowledge.extraction.extractor_registry import (
+    ExtractorRegistry,
+)
 from src.living_authenticity.knowledge.ingestion.pipeline import IngestionPipeline
 from src.living_authenticity.knowledge.parser.obsidian_parser import ObsidianParser
 
@@ -16,6 +19,7 @@ def _pipeline() -> IngestionPipeline:
     return IngestionPipeline(
         reader_registry=ReaderRegistry(),
         chunker_registry=ChunkerRegistry(),
+        extractor_registry=ExtractorRegistry(),
         cleaner=Cleaner(),
         metadata_extractor=MetadataExtractor(),
         parser=ObsidianParser(),
@@ -114,6 +118,7 @@ def test_pipeline_without_normalizer_preserves_backward_compatibility(tmp_path):
     pipeline = IngestionPipeline(
         reader_registry=ReaderRegistry(),
         chunker_registry=ChunkerRegistry(),
+        extractor_registry=ExtractorRegistry(),
         cleaner=Cleaner(),
         metadata_extractor=MetadataExtractor(),
         parser=ObsidianParser(),

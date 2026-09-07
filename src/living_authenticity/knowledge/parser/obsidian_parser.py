@@ -180,8 +180,36 @@ class ObsidianParser(BaseParser):
             following = text[match.end() : end]
             content = rest + (("\n" + following) if following else "")
             sections.append((match.group("label").strip(), content))
-
         return sections
+
+    def section_boundaries(self, text: str) -> list[tuple[str, int, int]]:
+        """Return labeled sections as ``(label, start, end)`` char spans.
+
+        ``start`` points at the first character of the label line and ``end``
+        points just past the last character of that section's content. The
+        returned spans are therefore suitable for slicing the text (and any
+        representation that preserves character positions relative to it) into
+        per-section chunks.
+
+        Sections without a leading label are returned with an empty label.
+        """
+        matches = list(LABEL_LINE_PATTERN.finditer(text))
+        if not matches:
+            return [("", 0, len(text))]
+
+        boundaries: list[tuple[str, int, int]] = []
+        first = matches[0]
+        if first.start() > 0:
+            prefix = text[: first.start()]
+            if prefix.strip():
+                boundaries.append(("", 0, first.start()))
+
+        for index, match in enumerate(matches):
+            start = match.start()
+            end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+            boundaries.append((match.group("label").strip(), start, end))
+
+        return boundaries
 
     def _extract_wikilinks(self, text: str) -> list[str]:
         return [match.strip() for match in WIKILINK_PATTERN.findall(text)]

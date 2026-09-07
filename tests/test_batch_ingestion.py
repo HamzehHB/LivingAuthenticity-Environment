@@ -7,6 +7,9 @@ from src.living_authenticity.knowledge.chunking.chunker_registry import (
 )
 from src.living_authenticity.knowledge.cleaning.cleaner import Cleaner
 from src.living_authenticity.knowledge.cleaning.normalizer import Normalizer
+from src.living_authenticity.knowledge.extraction.extractor_registry import (
+    ExtractorRegistry,
+)
 from src.living_authenticity.knowledge.ingestion.batch import (
     BatchIngestor,
     IngestionOutcome,
@@ -25,6 +28,7 @@ def _pipeline() -> IngestionPipeline:
     return IngestionPipeline(
         reader_registry=ReaderRegistry(),
         chunker_registry=ChunkerRegistry(),
+        extractor_registry=ExtractorRegistry(),
         cleaner=Cleaner(),
         metadata_extractor=MetadataExtractor(),
         parser=ObsidianParser(),

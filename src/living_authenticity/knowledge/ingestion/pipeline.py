@@ -5,6 +5,12 @@ from src.living_authenticity.knowledge.chunking.chunker_registry import (
 )
 from src.living_authenticity.knowledge.cleaning.cleaner import Cleaner
 from src.living_authenticity.knowledge.cleaning.normalizer import Normalizer
+from src.living_authenticity.knowledge.extraction.extractor_registry import (
+    ExtractorRegistry,
+)
+from src.living_authenticity.knowledge.extraction.knowledge_unit import (
+    KnowledgeUnit,
+)
 from src.living_authenticity.knowledge.metadata.extractor import MetadataExtractor
 from src.living_authenticity.knowledge.parser.base_parser import BaseParser
 from src.living_authenticity.knowledge.parser.parsed_note import ParsedNote
@@ -20,13 +26,13 @@ class IngestionResult:
     cleaned_text: str
     normalized_text: str | None
     chunks: list[str]
+    knowledge_units: list[KnowledgeUnit]
     parsed: ParsedNote | None
     metadata: dict
 
 
 class IngestionPipeline:
-    """
-    Current stage: read, clean, normalize, chunk, and parse.
+    """Pipeline: read, clean, normalize, parse, extract knowledge units, chunk.
 
     Reader
         ↓
@@ -34,11 +40,19 @@ class IngestionPipeline:
         ↓
     Normalizer (optional)
         ↓
-    Chunker
-        ↓
     Parser (optional)
         ↓
+    Knowledge Unit Extraction
+        ↓
+    Chunker
+        ↓
     File metadata
+
+    Extraction runs after parsing because ``MarkdownKnowledgeExtractor`` uses
+    the parser's ``section_boundaries()`` helper to locate semantic section
+    boundaries. The parser instance must therefore be available, and the
+    ``parsed`` output is used as a guard so that section-based extraction is
+    only applied when the parser successfully parsed the note.
 
     This pipeline does not embed, store, or write authoritative knowledge.
     """
@@ -47,6 +61,7 @@ class IngestionPipeline:
         self,
         reader_registry: ReaderRegistry,
         chunker_registry: ChunkerRegistry,
+        extractor_registry: ExtractorRegistry,
         cleaner: Cleaner,
         metadata_extractor: MetadataExtractor,
         parser: BaseParser | None = None,
@@ -55,6 +70,7 @@ class IngestionPipeline:
 
         self.reader_registry = reader_registry
         self.chunker_registry = chunker_registry
+        self.extractor_registry = extractor_registry
         self.cleaner = cleaner
         self.metadata_extractor = metadata_extractor
         self.parser = parser
@@ -71,12 +87,27 @@ class IngestionPipeline:
             normalized_text = self.normalizer.normalize(cleaned_text)
 
         text_for_chunking = normalized_text if normalized_text is not None else cleaned_text
-        chunker = self.chunker_registry.get(file_path)
-        chunks = chunker.split(text_for_chunking)
 
         parsed = None
         if self.parser is not None:
             parsed = self.parser.parse(text_for_chunking)
+
+        knowledge_units: list[KnowledgeUnit] = []
+        try:
+            extractor = self.extractor_registry.get(file_path)
+            knowledge_units = extractor.extract(
+                source=file_path,
+                original_text=raw_text,
+                cleaned_text=cleaned_text,
+                normalized_text=normalized_text or cleaned_text,
+                parsed=parsed,
+                parser=self.parser,
+            )
+        except ValueError:
+            knowledge_units = []
+
+        chunker = self.chunker_registry.get(file_path)
+        chunks = chunker.split(text_for_chunking)
 
         metadata = self.metadata_extractor.extract(file_path)
 
@@ -86,6 +117,7 @@ class IngestionPipeline:
             cleaned_text=cleaned_text,
             normalized_text=normalized_text,
             chunks=chunks,
+            knowledge_units=knowledge_units,
             parsed=parsed,
             metadata=metadata,
         )

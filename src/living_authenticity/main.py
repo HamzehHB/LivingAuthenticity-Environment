@@ -10,6 +10,10 @@ from src.living_authenticity.knowledge.ingestion.pipeline import (
     IngestionPipeline,
 )
 
+from src.living_authenticity.knowledge.extraction.extractor_registry import (
+    ExtractorRegistry,
+)
+
 from src.living_authenticity.knowledge.readers.reader_registry import (
     ReaderRegistry,
 )
@@ -29,6 +33,8 @@ def main():
 
     chunker_registry = ChunkerRegistry()
 
+    extractor_registry = ExtractorRegistry()
+
     cleaner = Cleaner()
 
     metadata = MetadataExtractor()
@@ -38,6 +44,7 @@ def main():
     pipeline = IngestionPipeline(
         reader_registry=reader_registry,
         chunker_registry=chunker_registry,
+        extractor_registry=extractor_registry,
         cleaner=cleaner,
         metadata_extractor=metadata,
         parser=parser,
