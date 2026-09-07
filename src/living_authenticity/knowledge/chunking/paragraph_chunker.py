@@ -3,7 +3,7 @@ from .base_chunker import BaseChunker
 
 class ParagraphChunker(BaseChunker):
     """
-    Chunker ساده بر اساس پاراگراف.
+    Simple paragraph-based chunker.
     """
 
     def split(self, text: str) -> list[str]:

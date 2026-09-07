@@ -5,9 +5,9 @@ from .base_chunker import BaseChunker
 
 class MarkdownChunker(BaseChunker):
     """
-    Chunker مخصوص Obsidian Markdown.
+    Chunker for Obsidian Markdown.
 
-    فایل را به Sectionهای منطقی تقسیم می کند.
+    Divides the file into logical sections.
 
     A section starts at a label line:
 
