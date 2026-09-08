@@ -1,3 +1,7 @@
+from src.living_authenticity.knowledge.classification.rule_based_classifier import (
+    DefaultClassifier,
+)
+
 from src.living_authenticity.knowledge.cleaning.cleaner import (
     Cleaner,
 )
@@ -41,6 +45,8 @@ def main():
 
     parser = ObsidianParser()
 
+    classifier = DefaultClassifier()
+
     pipeline = IngestionPipeline(
         reader_registry=reader_registry,
         chunker_registry=chunker_registry,
@@ -48,6 +54,7 @@ def main():
         cleaner=cleaner,
         metadata_extractor=metadata,
         parser=parser,
+        classifier=classifier,
     )
 
     print("Reader Registry initialized.")
@@ -55,6 +62,8 @@ def main():
     print("Chunker Registry initialized.")
 
     print("Parser initialized.")
+
+    print("Classifier initialized.")
 
     print("Pipeline initialized.")
 

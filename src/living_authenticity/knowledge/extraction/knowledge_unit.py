@@ -10,7 +10,7 @@ class KnowledgeUnit:
 
     ``proposed_type`` defaults to an empty string, representing an
     unresolved type. Type assignment (Classification) belongs to a later
-    stage; CP5 performs extraction only.
+    stage; the extraction stage performs extraction only.
     """
 
     id: str

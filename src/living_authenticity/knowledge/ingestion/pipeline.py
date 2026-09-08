@@ -1,7 +1,13 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from src.living_authenticity.knowledge.chunking.chunker_registry import (
     ChunkerRegistry,
+)
+from src.living_authenticity.knowledge.classification.base_classifier import (
+    KnowledgeUnitClassifier,
+)
+from src.living_authenticity.knowledge.classification.result import (
+    ClassificationResult,
 )
 from src.living_authenticity.knowledge.cleaning.cleaner import Cleaner
 from src.living_authenticity.knowledge.cleaning.normalizer import Normalizer
@@ -29,6 +35,7 @@ class IngestionResult:
     knowledge_units: list[KnowledgeUnit]
     parsed: ParsedNote | None
     metadata: dict
+    classifications: list[ClassificationResult] = field(default_factory=list)
 
 
 class IngestionPipeline:
@@ -44,6 +51,8 @@ class IngestionPipeline:
         ↓
     Knowledge Unit Extraction
         ↓
+    Classification (optional)
+        ↓
     Chunker
         ↓
     File metadata
@@ -53,6 +62,11 @@ class IngestionPipeline:
     boundaries. The parser instance must therefore be available, and the
     ``parsed`` output is used as a guard so that section-based extraction is
     only applied when the parser successfully parsed the note.
+
+    Classification is an analysis-only, proposal step. When a classifier is
+    provided, one :class:`ClassificationResult` is produced per extracted
+    :class:`KnowledgeUnit`; the units themselves are never mutated. Without a
+    classifier the ``classifications`` list stays empty.
 
     This pipeline does not embed, store, or write authoritative knowledge.
     """
@@ -66,6 +80,7 @@ class IngestionPipeline:
         metadata_extractor: MetadataExtractor,
         parser: BaseParser | None = None,
         normalizer: Normalizer | None = None,
+        classifier: KnowledgeUnitClassifier | None = None,
     ):
 
         self.reader_registry = reader_registry
@@ -75,6 +90,7 @@ class IngestionPipeline:
         self.metadata_extractor = metadata_extractor
         self.parser = parser
         self.normalizer = normalizer
+        self.classifier = classifier
 
     def ingest(self, file_path: str) -> IngestionResult:
 
@@ -106,6 +122,12 @@ class IngestionPipeline:
         except ValueError:
             knowledge_units = []
 
+        classifications = []
+        if self.classifier is not None:
+            classifications = [
+                self.classifier.classify(unit) for unit in knowledge_units
+            ]
+
         chunker = self.chunker_registry.get(file_path)
         chunks = chunker.split(text_for_chunking)
 
@@ -120,4 +142,5 @@ class IngestionPipeline:
             knowledge_units=knowledge_units,
             parsed=parsed,
             metadata=metadata,
+            classifications=classifications,
         )
