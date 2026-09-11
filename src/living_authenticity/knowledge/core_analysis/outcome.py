@@ -41,3 +41,18 @@ class CoreAnalysisResult:
     def is_potentially_relevant(self) -> bool:
         """True only for the conservative potentially_relevant observation."""
         return self.relevance == "potentially_relevant"
+
+    def __post_init__(self) -> None:
+        """Enforce conservative invariants on direct construction.
+
+        Builders only emit supported relevance values with fixed
+        authority flags, but direct construction must also be
+        conservative: an unsupported relevance coerces to
+        insufficient_evidence, and the non-authoritative /
+        human-review flags are fixed because analysis is never
+        approval, authorization, or execution.
+        """
+        if self.relevance not in CORE_RELEVANCE_VALUES:
+            object.__setattr__(self, "relevance", "insufficient_evidence")
+        object.__setattr__(self, "is_authoritative", False)
+        object.__setattr__(self, "requires_human_review", True)

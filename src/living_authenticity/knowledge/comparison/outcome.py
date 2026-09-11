@@ -31,3 +31,13 @@ class ComparisonResult:
     @property
     def has_overlap(self) -> bool:
         return bool(self.shared_terms)
+
+    def __post_init__(self) -> None:
+        """Coerce unsupported categories to insufficient_evidence.
+
+        Builders only emit supported comparison categories, but direct
+        construction must also be conservative: an unknown category
+        can never survive as an accepted analytical signal.
+        """
+        if self.category not in COMPARISON_CATEGORIES:
+            object.__setattr__(self, "category", "insufficient_evidence")

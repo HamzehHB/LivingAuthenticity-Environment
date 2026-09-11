@@ -26,6 +26,16 @@ class ProposedRelation:
     shared_terms: tuple = ()
     comparison_category: str = ""
 
+    def __post_init__(self) -> None:
+        """Coerce unsupported relations to unresolved.
+
+        Builders only emit supported relation values, but direct
+        construction must also be conservative: an unknown relation
+        can never survive as an accepted analytical signal.
+        """
+        if self.relation not in PROPOSED_RELATIONS:
+            object.__setattr__(self, "relation", "unresolved")
+
 
 @dataclass(frozen=True)
 class RelationDetectionResult:
