@@ -26,12 +26,13 @@ def test_adversarial_content_stays_inert():
 
 
 def test_unsafe_destination_never_authorizes():
+    prod_root = "/synthetic-production-root/example-vault"
     proposal = ProposalBuilder().build(
         _unit(), classification=_cls(), retrieval=_ret_with(),
         comparisons=(_cmp(),), relation=_rel(), core=_core(),
-        destination="F:/LivingAuthenticity_Data/Obsidian/note.md",
+        destination=prod_root + "/note.md",
     )
-    assert proposal.destination.startswith("F:/")
+    assert proposal.destination.startswith(prod_root)
     assert proposal.is_authoritative is False
     assert proposal.requires_human_review is True
 

@@ -34,8 +34,20 @@ def test_detection_reports_only_known_labels():
 
 
 def test_machine_specific_path_detection():
+    assert contains_machine_specific_path("plain research note") is False
     assert contains_machine_specific_path(
-        "root = F:/LivingAuthenticity_Data"
+        "root = C:/LivingAuthenticity_Data"
+    ) is False
+
+
+def test_machine_specific_path_detection_with_synthetic_prefix(monkeypatch):
+    import src.living_authenticity.security.sensitive_data as sd
+    monkeypatch.setattr(
+        sd, "MACHINE_SPECIFIC_PATH_PREFIXES",
+        ("Q:/SyntheticMachineOnly/PrivateVault",),
+    )
+    assert contains_machine_specific_path(
+        "root = Q:/SyntheticMachineOnly/PrivateVault"
     ) is True
     assert contains_machine_specific_path(
         "root = C:/LivingAuthenticity_Data"

@@ -1,3 +1,19 @@
+
+# Canonical knowledge-type vocabulary for classification proposals.
+# Only these values (or "" for unresolved) may survive as a proposed type.
+# Unknown values must coerce conservatively to unresolved.
+CLASSIFICATION_TYPES = (
+    "Core",
+    "Concept",
+    "Observation",
+    "Experience",
+    "Research",
+    "Method",
+    "Source",
+    "Meta",
+    "Archive",
+)
+
 from dataclasses import dataclass
 
 
@@ -27,4 +43,20 @@ class ClassificationResult:
     @property
     def is_resolved(self) -> bool:
         """True when a canonical type was proposed."""
-        return bool(self.proposed_type)
+        return self.proposed_type in CLASSIFICATION_TYPES
+
+    def __post_init__(self) -> None:
+        """Enforce conservative invariants on direct construction.
+
+        Builders only emit canonical types (or "" when unresolved), but
+        direct construction must also be conservative: an unknown
+        proposed_type coerces to unresolved ("" with is_certain False),
+        and an empty proposed_type can never carry is_certain True.
+        Frozen dataclass, so bypass via object.
+        """
+        if self.proposed_type not in CLASSIFICATION_TYPES and self.proposed_type != "":
+            object.__setattr__(self, "proposed_type", "")
+            object.__setattr__(self, "is_certain", False)
+        elif not self.proposed_type:
+            object.__setattr__(self, "is_certain", False)
+            

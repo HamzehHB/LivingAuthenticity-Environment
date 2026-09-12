@@ -51,5 +51,8 @@ build/
 tests/output/
 tests/temp/
 
+# ---------- Local-only tests (never tracked) ----------
+tests/local/
+
 # ---------- Private Project Documents ----------
 .project/

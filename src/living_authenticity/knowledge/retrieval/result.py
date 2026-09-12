@@ -1,9 +1,8 @@
 """Outcome of retrieving existing-knowledge candidates for one query unit.
 
-Retrieval is an analytical evidence-gathering stage between Classification
-and later comparison/decision stages. A result records what was queried,
-which existing items were found, and the limits of the search. It proposes
-nothing, decides nothing, and authorizes nothing.
+Retrieval is an analytical evidence-gathering stage. A result records what
+was queried, which existing items were found, and the limits of the search.
+It proposes nothing, decides nothing, and authorizes nothing.
 """
 
 from dataclasses import dataclass

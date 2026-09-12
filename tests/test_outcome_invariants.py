@@ -25,6 +25,26 @@ def test_comparison_vocab_coerces_unknown_category():
     assert result.has_overlap is False
 
 
+def test_classification_vocab_coerces_unknown_type():
+    from src.living_authenticity.knowledge.classification import (
+        CLASSIFICATION_TYPES,
+        ClassificationResult,
+    )
+    assert "Observation" in CLASSIFICATION_TYPES
+    result = ClassificationResult(
+        unit_id="q1", source="s", position=1,
+        proposed_type="duplicate", is_certain=True,
+    )
+    assert result.proposed_type == ""
+    assert result.is_certain is False
+    assert result.is_resolved is False
+    empty_certain = ClassificationResult(
+        unit_id="q1", source="s", position=1,
+        proposed_type="", is_certain=True,  # type: ignore
+    )
+    assert empty_certain.is_certain is False
+
+
 def test_relation_vocab_coerces_unknown_relation():
     assert "related" in PROPOSED_RELATIONS
     prop = ProposedRelation(

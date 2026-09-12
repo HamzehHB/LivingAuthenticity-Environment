@@ -1,3 +1,4 @@
+import re
 import subprocess
 from pathlib import Path
 
@@ -8,11 +9,20 @@ from src.living_authenticity.security import (
 
 REPO = Path(__file__).resolve().parent.parent
 
-# Files that necessarily contain detection-pattern strings:
-# the pattern definition module and the detector's own test fixtures.
-PATTERN_DEFINITION_FILES = (
+# Files that necessarily contain detection-pattern strings for the
+# secret-pattern scan: the pattern definition module and the detector's
+# own test fixtures (which must construct fake secrets to prove detection).
+SECRET_PATTERN_EXEMPT_FILES = (
     "src/living_authenticity/security/sensitive_data.py",
-    "tests/test_sensitive_data.py",
+    "tests/test_sensitive_data.example.py",
+)
+
+# Files exempt from the machine-path scan: only the pattern definition
+# module itself. Tracked tests must use synthetic fixture prefixes via
+# monkeypatching (see tests/test_sensitive_data.example.py); real-path
+# assertions live only under gitignored tests/local/.
+PATH_PREFIX_EXEMPT_FILES = (
+    "src/living_authenticity/security/sensitive_data.py",
 )
 
 IGNORED_ENTRIES = (
@@ -62,7 +72,7 @@ def _tracked_files() -> list[str]:
 
 def test_no_known_secret_patterns_in_tracked_files():
     for path in _tracked_files():
-        if path in PATTERN_DEFINITION_FILES:
+        if path in SECRET_PATTERN_EXEMPT_FILES:
             continue
         content = (REPO / path).read_text(encoding="utf-8", errors="replace")
         for pattern in SECRET_PATTERNS:
@@ -73,12 +83,18 @@ def test_no_known_secret_patterns_in_tracked_files():
 
 def test_production_and_repo_roots_absent_from_tracked_files():
     for path in _tracked_files():
-        if path in PATTERN_DEFINITION_FILES:
+        if path in PATH_PREFIX_EXEMPT_FILES:
             continue
         content = (REPO / path).read_text(encoding="utf-8", errors="replace")
+        normalized = re.sub(
+            r'"\s*\+\s*"', "", content,
+        )
         for prefix in MACHINE_SPECIFIC_PATH_PREFIXES:
             assert prefix not in content, (
                 f"{path} contains machine-specific path {prefix!r}"
+            )
+            assert prefix not in normalized, (
+                f"{path} contains obfuscated machine-specific path {prefix!r}"
             )
 
 
@@ -134,3 +150,4 @@ def test_no_unsafe_yaml_loading_in_code():
                     offenders.append(f"{path.name}: {marker!r}")
 
     assert not offenders, f"unsafe YAML loading found: {offenders}"
+    

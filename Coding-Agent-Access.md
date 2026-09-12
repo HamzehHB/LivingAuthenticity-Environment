@@ -72,7 +72,74 @@ A coding agent that never loads extra editor files is still bound by this docume
 
 ---
 
-## 7. Invariant
+## 7. Local-Only Test Data
+
+Some tests may need to reference a genuinely real, project-specific detail — the actual production data path, a real local folder name, or another machine-specific value — because there is no way to prove the relevant behavior using a synthetic value alone.
+
+Such tests must live under `tests/local/`, which is excluded from version control via `.gitignore`. Nothing under `tests/local/` is ever pushed, shared, or exposed to anyone who clones this repository.
+
+The bar for placing a test under `tests/local/` is narrow:
+
+> A test belongs in `tests/local/` only if it cannot be rewritten with a synthetic/fictitious value without losing what it actually proves.
+
+Sensitivity alone is not the criterion. A test being about security, path validation, secret detection, or any other "sensitive-sounding" topic does NOT by itself justify moving it to `tests/local/`. The default assumption is that almost every test CAN be rewritten with a synthetic value while still proving the same behavior — and when that is possible, it must stay in the public, tracked test suite.
+
+This repository is intended to be usable by other people, on other machines, with their own data layout — not built exclusively around this developer's local environment. A test suite that only works, or only makes sense, on this specific machine defeats that goal. Prefer synthetic, portable, illustrative fixtures by default; treat `tests/local/` as the narrow exception, not a convenient place to move anything inconvenient or private-feeling.
+
+Creating a test under `tests/local/` is never a standalone action. It
+must be paired, in the same task, with a synthetic public counterpart
+in the tracked suite, named per Section 8 below. Do not create a
+`tests/local/` file without also creating (or confirming the existence
+of) its public `.example` counterpart in the same piece of work — and
+do not create a public `.example` file unless an actual real-detail
+counterpart exists, or is being created right now, under
+`tests/local/`. The two always come as a pair.
+
+---
+
+## 8. Public Example Counterpart Naming
+
+The `.example` marker exists for exactly one purpose: to mark the
+public counterpart of a test that has a real, non-synthesizable
+version living in `tests/local/`. It is a *pairing* label, not a
+quality label.
+
+Do NOT apply `.example` to a test merely because it:
+- uses synthetic/fake data (nearly every good test does — this is
+  normal, not a special case);
+- is simple, illustrative, or easy to understand;
+- is "sensitive-sounding" (security, path validation, secret
+  detection) but has no real counterpart in `tests/local/`.
+
+Apply `.example` to a test ONLY when a corresponding real-detail
+version of the same behavior exists (or is being created) under
+`tests/local/`. If there is no local counterpart, there is no
+`.example` — the test keeps its normal `test_*.py` name.
+
+When a pairing does exist, name the public counterpart so the
+pairing is obvious:
+
+- File-level: `tests/local/test_sensitive_data_local.py` pairs with
+  `tests/test_sensitive_data.example.py`.
+- Function-level (same file, no rename needed): a function
+  `test_machine_specific_path_detection` pairs with
+  `test_machine_specific_path_detection_example`.
+
+Before renaming anything to `.example`, explicitly identify which
+`tests/local/` file it pairs with. If you cannot name that pairing,
+do not apply the marker — leave the test's ordinary name alone.
+
+---
+
+## 9. Destructive Git Commands Require Human Approval
+
+A coding agent must never run a destructive git command (`checkout -- <path>`, `restore`, `reset --hard`, `clean -f`, or equivalent) on any path with uncommitted changes without first showing the human the exact command and the files it would affect, and receiving explicit approval for that specific command in that specific request.
+
+This applies even when the agent is trying to recover from its own mistake — recovering from an error is not an exception to this rule.
+
+---
+
+## 10. Invariant
 
 > Coding-agent capability is not permission to access production data.  
 > Minimum necessary access. Explicit scoped approval. Never the whole tree by default.
