@@ -2,7 +2,7 @@ LivingAuthenticity Environment
 
 ![Monica](Monica.jpg)
 *Just Monica felt right in this place.*
-[For Monica — Notes on Mind & Living](https://hamzehhb3.substack.com/p/for-monica)
+[For Monica](https://hamzehhb3.substack.com/p/for-monica)
 
 «A modular research infrastructure for organizing, retrieving, and developing knowledge with AI assistance.»
 
@@ -32,6 +32,11 @@ Implemented foundations include:
 - Testing infrastructure
 - Project documentation and governance
 - Separation of source code from persistent data
+- Deterministic analytical stages (classification, retrieval,
+  comparison, relation detection, core analysis, proposal,
+  confidence) plus a proposed Obsidian note representation
+  (Generated Note ≠ Authoritative Note; representation does not
+  execute CREATE)
 
 Advanced components such as semantic retrieval, embeddings, LanceDB, knowledge evolution, and agent systems belong to later development phases and are not represented as completed features.
 
