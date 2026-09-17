@@ -1,61 +1,15 @@
-from src.living_authenticity.knowledge.classification.rule_based_classifier import (
-    DefaultClassifier,
-)
-
-from src.living_authenticity.knowledge.cleaning.cleaner import (
-    Cleaner,
-)
-
-from src.living_authenticity.knowledge.metadata.extractor import (
-    MetadataExtractor,
-)
-
-from src.living_authenticity.knowledge.ingestion.pipeline import (
-    IngestionPipeline,
-)
-
-from src.living_authenticity.knowledge.extraction.extractor_registry import (
-    ExtractorRegistry,
-)
-
-from src.living_authenticity.knowledge.readers.reader_registry import (
-    ReaderRegistry,
-)
-
-from src.living_authenticity.knowledge.chunking.chunker_registry import (
-    ChunkerRegistry,
-)
-
-from src.living_authenticity.knowledge.parser.obsidian_parser import (
-    ObsidianParser,
-)
+from src.living_authenticity.knowledge.pipeline import EvidenceFirstPipeline
 
 
-def main():
+def main() -> EvidenceFirstPipeline:
+    """Bootstrap the integrated evidence-first analytical pipeline.
 
-    reader_registry = ReaderRegistry()
+    Single entry point reaching the full chain (ingestion through
+    Knowledge Filter plus the proposed representation). Analysis-only:
+    no approval, authorization, execution, or vault mutation.
+    """
 
-    chunker_registry = ChunkerRegistry()
-
-    extractor_registry = ExtractorRegistry()
-
-    cleaner = Cleaner()
-
-    metadata = MetadataExtractor()
-
-    parser = ObsidianParser()
-
-    classifier = DefaultClassifier()
-
-    pipeline = IngestionPipeline(
-        reader_registry=reader_registry,
-        chunker_registry=chunker_registry,
-        extractor_registry=extractor_registry,
-        cleaner=cleaner,
-        metadata_extractor=metadata,
-        parser=parser,
-        classifier=classifier,
-    )
+    pipeline = EvidenceFirstPipeline()
 
     print("Reader Registry initialized.")
 

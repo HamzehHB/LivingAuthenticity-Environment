@@ -37,6 +37,11 @@ Implemented foundations include:
   confidence) plus a proposed Obsidian note representation
   (Generated Note ≠ Authoritative Note; representation does not
   execute CREATE)
+- Integrated evidence-first analytical pipeline composing those
+  stages in contractual order (retrieval before classification)
+  with inspectable intermediate results, plus a Knowledge Filter
+  as an analytical boundary signal (non-authoritative; no approval,
+  authorization, or execution)
 
 Advanced components such as semantic retrieval, embeddings, LanceDB, knowledge evolution, and agent systems belong to later development phases and are not represented as completed features.
 

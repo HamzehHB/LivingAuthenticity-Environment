@@ -39,7 +39,7 @@ class IngestionResult:
 
 
 class IngestionPipeline:
-    """Pipeline: read, clean, normalize, parse, extract knowledge units, chunk.
+    """Pipeline: read, clean, normalize, chunk, parse, extract units, metadata.
 
     Reader
         ↓
@@ -47,15 +47,22 @@ class IngestionPipeline:
         ↓
     Normalizer (optional)
         ↓
+    Chunker
+        ↓
     Parser (optional)
         ↓
     Knowledge Unit Extraction
         ↓
-    Classification (optional)
-        ↓
-    Chunker
-        ↓
     File metadata
+
+    The contractual runtime order places chunking before parsing/extraction:
+    parsing operates on the normalized representation shared with chunking,
+    and extraction consumes that parsed structure. Classification is NOT part
+    of ingestion ordering in the integrated runtime: ``EvidenceFirstPipeline``
+    constructs this pipeline with ``classifier=None`` and classifies each unit
+    only after retrieval, comparison, relation analysis, and Core analysis.
+    The optional ``classifier`` hook exists only for backward compatibility
+    with pre-integration tests and must not be used to gate retrieval.
 
     Extraction runs after parsing because ``MarkdownKnowledgeExtractor`` uses
     the parser's ``section_boundaries()`` helper to locate semantic section
@@ -102,11 +109,14 @@ class IngestionPipeline:
         if self.normalizer is not None:
             normalized_text = self.normalizer.normalize(cleaned_text)
 
-        text_for_chunking = normalized_text if normalized_text is not None else cleaned_text
+        text_for_analysis = normalized_text if normalized_text is not None else cleaned_text
+
+        chunker = self.chunker_registry.get(file_path)
+        chunks = chunker.split(text_for_analysis)
 
         parsed = None
         if self.parser is not None:
-            parsed = self.parser.parse(text_for_chunking)
+            parsed = self.parser.parse(text_for_analysis)
 
         knowledge_units: list[KnowledgeUnit] = []
         try:
@@ -127,9 +137,6 @@ class IngestionPipeline:
             classifications = [
                 self.classifier.classify(unit) for unit in knowledge_units
             ]
-
-        chunker = self.chunker_registry.get(file_path)
-        chunks = chunker.split(text_for_chunking)
 
         metadata = self.metadata_extractor.extract(file_path)
 
