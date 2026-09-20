@@ -139,7 +139,19 @@ This applies even when the agent is trying to recover from its own mistake — r
 
 ---
 
-## 10. Invariant
+## 10. No Filesystem Access Outside the Repository Workspace
+
+A coding agent must never read, write, create, or delete any file or directory outside the repository workspace root, without first showing the human the exact path and receiving explicit approval for that specific path in that specific request.
+
+This includes, without limitation: the system temp directory (`%TEMP%`, `/tmp`, or equivalent), the user's home directory, any path outside the repository tree, and any location not already covered by Sections 1–8 above.
+
+If verification output must be captured because the terminal/shell tool is unreliable, write the capture file **inside the repository**, under a directory already covered by `.gitignore` (for example `Logs/`), so it is visible in `git status` as an ignored path rather than invisible outside the workspace. Delete it afterward when safe to do so.
+
+This applies even when the motivation is troubleshooting, verification, or working around a broken tool — a workaround is not an exception to this rule.
+
+---
+
+## 11. Invariant
 
 > Coding-agent capability is not permission to access production data.  
 > Minimum necessary access. Explicit scoped approval. Never the whole tree by default.
