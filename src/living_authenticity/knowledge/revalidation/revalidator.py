@@ -7,6 +7,7 @@ from src.living_authenticity.knowledge.approval.proposal_hash import (
 from src.living_authenticity.knowledge.confidence.outcome import ConfidenceAssessment
 from src.living_authenticity.knowledge.proposal.outcome import PROPOSAL_ACTIONS, Proposal
 from .outcome import REVALIDATION_CHECKS, RevalidationResult
+from .schema_version import current_schema_version
 
 
 def _fail(check, reason):
@@ -32,7 +33,8 @@ class Revalidator:
             raise TypeError("confidence must be a ConfidenceAssessment")
         if schema_version is not None and not isinstance(schema_version, str):
             raise TypeError("schema_version must be a string")
-        if schema_version and schema_version != "1.0.0":
+        current = current_schema_version()
+        if schema_version and (not current or schema_version != current):
             return _fail("schema_state", "applicable schema/state changed after approval")
         if outcome.proposal_hash != request.proposal_hash:
             return _fail("approval_binding", "approval bound to a different proposal")

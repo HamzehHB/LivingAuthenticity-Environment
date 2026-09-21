@@ -114,15 +114,34 @@ def test_schema_state_incompatibility_fails():
     result = revalidate_proposal(request, outcome, proposal, conf, schema_version="9.9.9")
     assert result.valid is False and result.failed_check == "schema_state"
 def test_schema_state_valid_and_empty_pass_through():
+    import yaml
+    from pathlib import Path
+    from src.living_authenticity.knowledge.revalidation import current_schema_version
     _, _, proposal, conf, request, outcome = _approved()
     ok_default = revalidate_proposal(request, outcome, proposal, conf)
     assert ok_default.valid is True
     ok_empty = revalidate_proposal(request, outcome, proposal, conf, schema_version="")
     assert ok_empty.valid is True
-    ok_pinned = revalidate_proposal(request, outcome, proposal, conf, schema_version="1.0.0")
+    real_path = Path(__file__).resolve().parents[1] / "Knowledge-Schema.yaml"
+    expected = yaml.safe_load(real_path.read_text(encoding="utf-8"))["schema"]["version"]
+    assert current_schema_version() == expected
+    ok_pinned = revalidate_proposal(request, outcome, proposal, conf, schema_version=expected)
     assert ok_pinned.valid is True
     with pytest.raises(TypeError):
         revalidate_proposal(request, outcome, proposal, conf, schema_version=123)  # type: ignore[arg-type]
+
+
+def test_schema_version_helper_graceful_on_unreadable(tmp_path):
+    from pathlib import Path
+    from src.living_authenticity.knowledge.revalidation import current_schema_version
+    tmp_dir: Path = tmp_path
+    assert current_schema_version(tmp_dir / "missing.yaml") == ""
+    bad = tmp_dir / "bad.yaml"
+    bad.write_text("schema: [unclosed", encoding="utf-8")
+    assert current_schema_version(bad) == ""
+    noversion = tmp_dir / "nover.yaml"
+    noversion.write_text("schema:\n  name: x\n", encoding="utf-8")
+    assert current_schema_version(noversion) == ""
 
 
 def test_provenance_missing_fails():
