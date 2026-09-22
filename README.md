@@ -42,6 +42,11 @@ Implemented foundations include:
   with inspectable intermediate results, plus a Knowledge Filter
   as an analytical boundary signal (non-authoritative; no approval,
   authorization, or execution)
+- Explicit human approval gate, fresh revalidation of the exact
+  approved proposal, one-shot controlled CREATE execution into a
+  staging root only, and an observational audit/traceability record
+  built from those same lifecycle objects (audit authorizes and
+  executes nothing)
 
 Advanced components such as semantic retrieval, embeddings, LanceDB, knowledge evolution, and agent systems belong to later development phases and are not represented as completed features.
 
