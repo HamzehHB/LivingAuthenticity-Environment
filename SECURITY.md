@@ -23,8 +23,12 @@ Facts verified against the repository at this checkpoint:
 * Application code performs no network calls, no dynamic code execution
   (`eval`/`exec`), no shell-out (`subprocess`/`os.system`), and no
   deserialization of untrusted data.
-* The ingestion pipeline is analysis-only: it performs no authoritative writes
-  to knowledge. Current executable action scope is
+* The analytical pipeline is analysis-only: it performs no authoritative writes
+  to knowledge. The single controlled-execution boundary
+  (`knowledge/execution/`) writes exactly one approved + revalidated
+  `CREATE` artifact (`<proposal_hash>.md`) into an explicitly supplied
+  staging root confined by `PathBoundary`, with no overwrite and no
+  authoritative-vault placement. Current executable action scope is
   `CREATE` / `DO_NOT_IMPORT` / `NEEDS_REVIEW` — everything else is future work.
 * Private configuration and private documents are physically outside the
   tracked tree: `Config/paths.local.yaml`, `.project/`, `.clinerules/`,
@@ -35,7 +39,7 @@ Facts verified against the repository at this checkpoint:
   default**. Runtime data-processing components follow
   `.project/Local-Paths-Reference.md`; that access never extends to
   development agents, and knowing a path is not permission.
-* Reusable runtime security utilities live in `src/living_authenticity/security/`: a default-deny path boundary (`PathBoundary`) and value-safe sensitive-data detection (`find_secrets` / `contains_secret`). They are not yet wired into the ingestion pipeline — wiring lands with the checkpoint that introduces real input/output handling.
+* Reusable runtime security utilities live in `src/living_authenticity/security/`: a default-deny path boundary (`PathBoundary`) and value-safe sensitive-data detection (`find_secrets` / `contains_secret`). `PathBoundary` is wired into the controlled-execution boundary (`knowledge/execution/`) as its staging confinement; it remains unwired into the ingestion/analysis pipeline, which performs no writes.
 
 ---
 
