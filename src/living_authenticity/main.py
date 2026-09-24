@@ -1,4 +1,4 @@
-from src.living_authenticity.knowledge.pipeline import EvidenceFirstPipeline
+from src.living_authenticity.knowledge.orchestration import EvidenceFirstPipeline
 
 
 def main() -> EvidenceFirstPipeline:

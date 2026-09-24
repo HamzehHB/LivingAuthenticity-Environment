@@ -10,18 +10,18 @@ contradictory input fails conservatively via TypeError/ValueError
 rather than invented content. No filesystem, network, provider, or
 model operations are performed.
 """
-from src.living_authenticity.knowledge.classification.result import (
+from src.living_authenticity.knowledge.analysis.classification.result import (
     CLASSIFICATION_TYPES,
     ClassificationResult,
 )
-from src.living_authenticity.knowledge.confidence.outcome import (
+from src.living_authenticity.knowledge.decision.confidence.outcome import (
     CONFIDENCE_LEVELS,
     ConfidenceAssessment,
 )
-from src.living_authenticity.knowledge.extraction.knowledge_unit import (
+from src.living_authenticity.knowledge.ingestion.extraction.knowledge_unit import (
     KnowledgeUnit,
 )
-from src.living_authenticity.knowledge.proposal.outcome import (
+from src.living_authenticity.knowledge.decision.proposal.outcome import (
     PROPOSAL_ACTIONS,
     Proposal,
 )

@@ -37,7 +37,7 @@ Unless the human gives **explicit, same-request, scoped approval**, a coding age
 ## 3. Allowed without extra approval
 
 - This git repository (source, tests, public docs, `Config/`)
-- `tests/test_data/` and other synthetic fixtures inside the repository
+- `tests/fixtures/` and other synthetic fixtures inside the repository
 
 ---
 
@@ -120,7 +120,7 @@ When a pairing does exist, name the public counterpart so the
 pairing is obvious:
 
 - File-level: `tests/local/test_sensitive_data_local.py` pairs with
-  `tests/test_sensitive_data.example.py`.
+  `tests/security/test_sensitive_data.example.py`.
 - Function-level (same file, no rename needed): a function
   `test_machine_specific_path_detection` pairs with
   `test_machine_specific_path_detection_example`.

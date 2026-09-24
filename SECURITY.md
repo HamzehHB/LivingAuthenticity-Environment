@@ -25,7 +25,7 @@ Facts verified against the repository at this checkpoint:
   deserialization of untrusted data.
 * The analytical pipeline is analysis-only: it performs no authoritative writes
   to knowledge. The single controlled-execution boundary
-  (`knowledge/execution/`) writes exactly one approved + revalidated
+  (`knowledge/governance/execution/`) writes exactly one approved + revalidated
   `CREATE` artifact (`<proposal_hash>.md`) into an explicitly supplied
   staging root confined by `PathBoundary`, with no overwrite and no
   authoritative-vault placement. Current executable action scope is
@@ -39,7 +39,7 @@ Facts verified against the repository at this checkpoint:
   default**. Runtime data-processing components follow
   `.project/Local-Paths-Reference.md`; that access never extends to
   development agents, and knowing a path is not permission.
-* Reusable runtime security utilities live in `src/living_authenticity/security/`: a default-deny path boundary (`PathBoundary`) and value-safe sensitive-data detection (`find_secrets` / `contains_secret`). `PathBoundary` is wired into the controlled-execution boundary (`knowledge/execution/`) as its staging confinement; it remains unwired into the ingestion/analysis pipeline, which performs no writes.
+* Reusable runtime security utilities live in `src/living_authenticity/security/`: a default-deny path boundary (`PathBoundary`) and value-safe sensitive-data detection (`find_secrets` / `contains_secret`). `PathBoundary` is wired into the controlled-execution boundary (`knowledge/governance/execution/`) as its staging confinement; it remains unwired into the ingestion/analysis pipeline, which performs no writes.
 
 ---
 

@@ -1,26 +1,26 @@
 from dataclasses import dataclass, field
 
-from src.living_authenticity.knowledge.chunking.chunker_registry import (
+from src.living_authenticity.knowledge.ingestion.chunking.chunker_registry import (
     ChunkerRegistry,
 )
-from src.living_authenticity.knowledge.classification.base_classifier import (
+from src.living_authenticity.knowledge.analysis.classification.base_classifier import (
     KnowledgeUnitClassifier,
 )
-from src.living_authenticity.knowledge.classification.result import (
+from src.living_authenticity.knowledge.analysis.classification.result import (
     ClassificationResult,
 )
-from src.living_authenticity.knowledge.cleaning.cleaner import Cleaner
-from src.living_authenticity.knowledge.cleaning.normalizer import Normalizer
-from src.living_authenticity.knowledge.extraction.extractor_registry import (
+from src.living_authenticity.knowledge.ingestion.cleaning.cleaner import Cleaner
+from src.living_authenticity.knowledge.ingestion.cleaning.normalizer import Normalizer
+from src.living_authenticity.knowledge.ingestion.extraction.extractor_registry import (
     ExtractorRegistry,
 )
-from src.living_authenticity.knowledge.extraction.knowledge_unit import (
+from src.living_authenticity.knowledge.ingestion.extraction.knowledge_unit import (
     KnowledgeUnit,
 )
-from src.living_authenticity.knowledge.metadata.extractor import MetadataExtractor
-from src.living_authenticity.knowledge.parser.base_parser import BaseParser
-from src.living_authenticity.knowledge.parser.parsed_note import ParsedNote
-from src.living_authenticity.knowledge.readers.reader_registry import ReaderRegistry
+from src.living_authenticity.knowledge.ingestion.metadata.extractor import MetadataExtractor
+from src.living_authenticity.knowledge.ingestion.parser.base_parser import BaseParser
+from src.living_authenticity.knowledge.ingestion.parser.parsed_note import ParsedNote
+from src.living_authenticity.knowledge.ingestion.readers.reader_registry import ReaderRegistry
 
 
 @dataclass
