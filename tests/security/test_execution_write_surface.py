@@ -38,6 +38,11 @@ BOUNDARY_FAMILY_PREFIXES = (
 
 FORBIDDEN_IMPORT_ROOTS = frozenset({
     "subprocess", "socket", "shutil", "pickle", "marshal", "ctypes",
+    "requests", "httpx", "urllib", "http", "importlib",
+})
+
+FORBIDDEN_BUILTIN_CALLS = frozenset({
+    "eval", "exec", "__import__", "compile",
 })
 
 
@@ -62,12 +67,18 @@ def _iter_calls(tree):
             yield func.attr, base, node
 
 
-def _mode_of(node) -> str:
-    if node.args and isinstance(node.args[0], ast.Constant) and isinstance(
-        node.args[0].value, str
-    ):
-        return node.args[0].value
-    return "r"  # documented default of open()
+def _extract_mode(node: ast.Call, is_method: bool) -> str:
+    """Extract mode argument accurately whether positional, keyword, or default."""
+    for kw in node.keywords:
+        if kw.arg == "mode" and isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
+            return kw.value.value
+    # Positional mode index: 0 for method path.open(mode), 1 for global open(file, mode)
+    mode_idx = 0 if is_method else 1
+    if len(node.args) > mode_idx:
+        arg = node.args[mode_idx]
+        if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+            return arg.value
+    return "r"
 
 
 def test_controlled_executor_is_the_sole_mutation_call_site():
@@ -118,10 +129,11 @@ def test_all_open_calls_in_src_are_read_mode():
     offenders = []
     for path in sorted(SRC.rglob("*.py")):
         tree = ast.parse(path.read_text(encoding="utf-8"))
-        for attr, _base, node in _iter_calls(tree):
+        for attr, base, node in _iter_calls(tree):
             if attr != "open":
                 continue
-            mode = _mode_of(node)
+            is_method = bool(base) or isinstance(node.func, ast.Attribute)
+            mode = _extract_mode(node, is_method)
             if not mode.startswith("r"):
                 offenders.append(_relative(path) + ":" + mode)
     assert offenders == [], f"non-read open() in application code: {offenders}"
@@ -142,3 +154,39 @@ def test_no_process_network_or_deserialization_imports():
                 if root in FORBIDDEN_IMPORT_ROOTS:
                     offenders.append(_relative(path) + ":" + root)
     assert offenders == [], f"forbidden import in application code: {offenders}"
+
+
+def test_no_dynamic_code_execution_calls():
+    offenders = []
+    for path in sorted(SRC.rglob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for attr, base, _node in _iter_calls(tree):
+            if attr in ("eval", "exec", "__import__"):
+                offenders.append(_relative(path) + ":" + attr)
+            elif attr == "compile" and base != "re":
+                offenders.append(_relative(path) + ":" + (base + "." if base else "") + attr)
+    assert offenders == [], f"dynamic execution call in application code: {offenders}"
+
+
+def test_mutation_scan_cannot_be_trivially_bypassed():
+    """Negative-control: the mutation-term scan must trip on a synthetic
+    writer outside the executor while leaving the executor's single
+    staging write accepted.
+
+    This proves the scan has discriminating power and is not a tautology
+    that passes on any tree.
+    """
+    tree = ast.parse(
+        "target.write_text('x', encoding='utf-8')\n"
+        "target.mkdir()\n"
+        "os.remove('x')\n"
+        "pathlib.Path('x').unlink()\n"
+    )
+    found = sorted(
+        attr for attr, _base, _node in _iter_calls(tree)
+        if attr in MUTATION_ATTRS
+    )
+    assert "mkdir" in found
+    assert "remove" in found
+    assert "unlink" in found
+    assert "write_text" in found

@@ -1,8 +1,9 @@
 """Controlled execution boundary (single CREATE to staging only).
 
-Consumes an explicit approval plus a fresh CP16 revalidation result
-path; performs exactly one staging write for CREATE. No batch, no
-retry, no background work, no authoritative placement.
+Consumes an explicit approval plus a fresh execution governance
+revalidation result path; performs exactly one staging write for
+CREATE. No batch, no retry, no background work, no authoritative
+placement.
 """
 from .executor import ControlledExecutor, execute_create
 from .outcome import ExecutionResult

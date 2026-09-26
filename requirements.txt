@@ -128,7 +128,7 @@ threadpoolctl==3.6.0
     # via scikit-learn
 tokenizers==0.22.2
     # via transformers
-torch==2.12.1
+torch==2.14.0
     # via sentence-transformers
 tqdm==4.68.3
     # via

@@ -165,26 +165,36 @@ def test_removing_confidence_evidence_invalidates_execution(tmp_path):
     assert list(tmp_path.iterdir()) == []
 
 
-@pytest.mark.parametrize("destination", [
+# Hostile destination forms: traversal, absolute, UNC, and escape attempts
+HOSTILE_DESTINATIONS = (
     "../../escaped.md",
     "..\\..\\escaped.md",
     "C:/absolute/escaped.md",
     "\\\\server\\share\\escaped.md",
     "/absolute/unix/escaped.md",
     "Staging/../outside.md",
-])
-def test_execution_destination_forms_cannot_leave_staging(tmp_path, destination):
+)
+
+
+def test_execution_destination_forms_cannot_leave_staging(tmp_path):
     """Invariant: CREATE remains confined to the approved staging
     boundary; the proposed destination is inert data for every hostile
     path form."""
-    request, outcome, prop, conf, note, _rv = _chain(dest=destination)
-    result = execute_create(request, outcome, prop, conf, note, tmp_path)
-    assert result.executed is True
-    assert result.destination == destination  # preserved verbatim as data
-    artifact = request.proposal_hash + ".md"
-    assert [p.name for p in tmp_path.iterdir()] == [artifact]
-    assert (tmp_path / artifact).is_file()
-    assert not (tmp_path.parent / "escaped.md").exists()
+    for destination in HOSTILE_DESTINATIONS:
+        # Each destination form is tested in its own clean staging subdirectory
+        staging_dir = tmp_path / f"staging_{abs(hash(destination))}"
+        staging_dir.mkdir()
+        request, outcome, prop, conf, note, _rv = _chain(dest=destination)
+        result = execute_create(request, outcome, prop, conf, note, staging_dir)
+        assert result.executed is True
+        assert result.destination == destination  # preserved verbatim as data
+        artifact = request.proposal_hash + ".md"
+        assert [p.name for p in staging_dir.iterdir()] == [artifact]
+        assert (staging_dir / artifact).is_file()
+        # No escape at any enclosing level for any hostile form
+        for enclosing in (staging_dir, tmp_path, tmp_path.parent):
+            assert not (enclosing / "escaped.md").exists()
+            assert not (enclosing / "outside.md").exists()
 
 
 def test_core_conflict_resolves_conservatively_and_stays_non_executable(tmp_path):
@@ -300,3 +310,50 @@ def test_invalid_encoding_fails_bounded_in_batch(tmp_path):
     assert outcomes[1].result is None
     assert outcomes[1].error
     assert outcomes[0].is_success and outcomes[2].is_success
+
+def test_hostile_approval_variations_cannot_reach_execution(tmp_path):
+    """End-to-end hostile approval verification:
+    Forged, transferred, stale, default-rejected, or invalid inputs
+    must fail revalidation/execution and never write to staging.
+    """
+    gate = ExplicitApprovalGate()
+    query_a = _query(uid="u1")
+    prop_a = _proposal(query_unit_id="u1", title="Title A")
+    conf_a = _confidence(action="CREATE")
+    req_a = gate.build_request(query_a, prop_a, conf_a)
+    note_a = DefaultOutputGenerator().generate(query_a, proposal=prop_a, confidence=conf_a)
+
+    query_b = _query(uid="u2")
+    prop_b = _proposal(query_unit_id="u2", title="Title B")
+    conf_b = _confidence(action="CREATE")
+    req_b = gate.build_request(query_b, prop_b, conf_b)
+    outcome_b_approved = gate.decide(req_b, "y")
+
+    # 1. Transferable approval attempt: outcome from proposal B applied to proposal A
+    res_transfer = execute_create(req_a, outcome_b_approved, prop_a, conf_a, note_a, tmp_path)
+    assert res_transfer.executed is False
+    assert res_transfer.failed_check == "approval_binding"
+    assert list(tmp_path.iterdir()) == []
+
+    # 2. Forged hash approval: approval outcome manually forged with incorrect hash
+    forged_outcome = dataclasses.replace(outcome_b_approved, proposal_hash="0" * 64)
+    res_forged = execute_create(req_b, forged_outcome, prop_b, conf_b, note_a, tmp_path)
+    assert res_forged.executed is False
+    assert res_forged.failed_check in ("approval_binding", "proposal_identity")
+    assert list(tmp_path.iterdir()) == []
+
+    # 3. Default rejection and non-accepted inputs in end-to-end chain
+    for non_accepted in ("", "  ", "n", "no", "NO", "1", "true", "ok", "APPROVED", "yes please"):
+        out_reject = gate.decide(req_a, non_accepted)
+        res_reject = execute_create(req_a, out_reject, prop_a, conf_a, note_a, tmp_path)
+        assert res_reject.executed is False
+        assert res_reject.failed_check == "approval_binding"
+        assert list(tmp_path.iterdir()) == []
+
+    # 4. Stale approval: approved, but live proposal content modified before execution
+    outcome_a_approved = gate.decide(req_a, "yes")
+    tampered_prop = dataclasses.replace(prop_a, title="Tampered Title After Approval")
+    res_stale = execute_create(req_a, outcome_a_approved, tampered_prop, conf_a, note_a, tmp_path)
+    assert res_stale.executed is False
+    assert res_stale.failed_check in ("proposal_contents", "proposal_identity")
+    assert list(tmp_path.iterdir()) == []

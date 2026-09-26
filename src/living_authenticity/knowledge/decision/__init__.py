@@ -15,6 +15,6 @@ Deliberately contains no eager imports of the subpackages, so that
 importing one decision member cannot trigger another family's chain.
 """
 from .filter_outcome import FILTER_VERDICTS, FilterOutcome
-from src.living_authenticity.knowledge.decision.knowledge_filter import KnowledgeFilter
+from .knowledge_filter import KnowledgeFilter
 
 __all__ = ("FILTER_VERDICTS", "FilterOutcome", "KnowledgeFilter")
